@@ -17,7 +17,7 @@ def status_count(query, status):
 def student_dashboard():
     query = Report.query.filter_by(user_id=current_user.id)
     reports = query.order_by(Report.created_at.desc()).all()
-    latest_report = query.filter(Report.status.in_(['menunggu_verifikasi', 'diverifikasi', 'sedang_diproses'])).order_by(Report.updated_at.desc()).first()
+    latest_report = query.filter(Report.status.in_(['menunggu_verifikasi', 'diverifikasi', 'sedang_diproses'])).order_by(Report.updated_at.desc()).first() or query.order_by(Report.created_at.desc()).first()
     from app.models.response import Response as ReportResponse
     notification_count = ReportResponse.query.join(Report).filter(Report.user_id == current_user.id, ReportResponse.user_id != current_user.id).count()
     total = query.count()
