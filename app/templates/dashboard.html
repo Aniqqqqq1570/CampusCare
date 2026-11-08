@@ -1,53 +1,147 @@
 {% extends "base.html" %}
-{% block title %}{{ page_title }} | CampusCare{% endblock %}
+{% block title %}Dashboard Mahasiswa | CampusCare{% endblock %}
+{% block head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+{% endblock %}
 {% block content %}
-<div class="cc-dashboard">
-  <header class="cc-app-header">
-    <div class="cc-app-header-inner">
-      <a class="cc-brand" href="{{ url_for('pages.' + dashboard_type + '_dashboard') }}">
-        <span class="cc-brand-mark">C</span>
-        <span><span class="cc-brand-name">Campus<span>Care</span></span><span class="cc-brand-caption">SISTEM SARPRAS TERPADU</span></span>
+{% if dashboard_type == 'student' %}
+<div class="student-dashboard">
+  <header class="student-header">
+    <div class="student-header-inner">
+      <a class="student-brand" href="{{ url_for('pages.student_dashboard') }}">
+        <span class="student-brand-icon"><span class="material-symbols-outlined">domain</span></span>
+        <span class="student-brand-copy"><strong>CampusCare</strong><small>SISTEM SARPRAS TERPADU</small></span>
       </a>
-      <nav class="cc-app-nav" aria-label="Navigasi utama">
-        <a class="active" href="{{ url_for('pages.' + dashboard_type + '_dashboard') }}">Dashboard</a>
-        {% if dashboard_type == 'student' %}
-          <a href="{{ url_for('pages.student_create_report') }}">Buat Laporan</a>
-          <a href="{{ url_for('pages.student_reports') }}">Riwayat Laporan</a>
-        {% elif dashboard_type == 'campus' %}
-          <a href="{{ url_for('pages.campus_reports') }}">Laporan Masuk</a>
-        {% else %}
-          <a href="{{ url_for('pages.admin_users') }}">Pengguna</a>
-          <a href="{{ url_for('pages.admin_categories') }}">Kategori</a>
-          <a href="{{ url_for('pages.admin_locations') }}">Lokasi</a>
-          <a href="{{ url_for('pages.admin_activity') }}">Aktivitas</a>
-        {% endif %}
+      <nav class="student-nav">
+        <a href="{{ url_for('auth.home') }}">Beranda</a>
+        <a class="active" href="{{ url_for('pages.student_dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('pages.student_reports') }}">Laporan Saya</a>
+        <a href="{{ url_for('pages.student_create_report') }}">Buat Laporan</a>
       </nav>
-      <div class="cc-app-account">
-        <span class="cc-app-online"><i></i> Sistem aktif</span>
-        <span class="cc-app-avatar">{{ current_user.full_name[:1]|upper }}</span>
-        <span class="cc-app-account-name"><strong>{{ current_user.full_name }}</strong><small>{{ role_label }}</small></span>
-        <a class="cc-app-logout" href="{{ url_for('auth.logout') }}">Keluar</a>
+      <div class="student-header-actions">
+        <span class="student-system-pill"><i></i>Sistem aktif</span>
+        <a class="student-create-top" href="{{ url_for('pages.student_create_report') }}"><span class="material-symbols-outlined">add</span>Buat Laporan</a>
+        <div class="student-profile"><span class="student-avatar">{{ current_user.full_name[:1]|upper }}</span><span><strong>{{ current_user.full_name }}</strong><small>Mahasiswa</small></span></div>
+        <a class="student-logout" href="{{ url_for('auth.logout') }}">Keluar</a>
       </div>
     </div>
   </header>
 
-  <main class="cc-dashboard-main">
-    <div class="cc-dashboard-content">
-      {% with messages = get_flashed_messages(with_categories=true) %}{% for category, message in messages %}<div class="cc-alert cc-alert-{{ category }}">{{ message }}</div>{% endfor %}{% endwith %}
-      <div class="cc-dashboard-heading">
-        <div><span class="cc-dashboard-kicker">{{ role_label }}</span><h1>{{ page_title }}</h1><p>{{ page_subtitle }}</p></div>
-        {% if dashboard_type == "student" %}<a class="cc-btn cc-btn-primary" href="{{ url_for('pages.student_create_report') }}">＋ Buat Laporan</a>{% elif dashboard_type == "campus" %}<a class="cc-btn cc-btn-primary" href="{{ url_for('pages.campus_reports') }}">Lihat Laporan</a>{% endif %}
-      </div>
-      <section class="cc-stat-grid">{% for stat in stats %}<article class="cc-stat-card"><div class="cc-stat-top"><span>{{ stat.label }}</span><span class="cc-stat-icon {{ stat.tone }}">{{ stat.icon }}</span></div><strong>{{ stat.value }}</strong><small>Data saat ini</small></article>{% endfor %}</section>
-      {% if overview %}<section class="cc-overview-grid">{% for item in overview %}<article class="cc-overview-card"><span>{{ item.label }}</span><strong>{{ item.value }}</strong></article>{% endfor %}</section>{% endif %}
-      <section class="cc-table-panel">
-        <div class="cc-table-heading"><div><h2>Laporan Terbaru</h2><p>Informasi laporan yang tersimpan di CampusCare.</p></div><span class="cc-table-count">{{ reports|length }} data</span></div>
-        {% if reports %}<div class="cc-table-wrap"><table class="cc-data-table"><thead><tr><th>Informasi Laporan</th>{% if dashboard_type != 'student' %}<th>Pelapor</th>{% endif %}<th>Lokasi</th><th>Tanggal</th><th>Status</th></tr></thead><tbody>
-        {% for report in reports %}<tr><td><strong>{% if dashboard_type == 'student' %}<a class="cc-table-link" href="{{ url_for('pages.student_report_detail', report_id=report.id) }}">{{ report.title }}</a>{% elif dashboard_type == 'campus' %}<a class="cc-table-link" href="{{ url_for('pages.campus_report_detail', report_id=report.id) }}">{{ report.title }}</a>{% else %}{{ report.title }}{% endif %}</strong><small>{{ report.category.name }}</small></td>{% if dashboard_type != 'student' %}<td>{{ report.user.full_name }}</td>{% endif %}<td>{{ report.location.name }}<small>{{ report.location.building or 'Lokasi kampus' }}{% if report.location.floor %} · Lantai {{ report.location.floor }}{% endif %}</small></td><td>{{ report.created_at.strftime('%d %b %Y') if report.created_at else '-' }}</td><td><span class="cc-status status-{{ report.status }}">{{ report.status|replace('_',' ')|title }}</span></td></tr>{% endfor %}
-        </tbody></table></div>{% else %}<div class="cc-empty-state"><span>▤</span><strong>Belum ada laporan</strong><p>{% if dashboard_type == 'student' %}Laporan yang kamu buat akan muncul di sini.{% else %}Laporan yang dikirim mahasiswa akan muncul di sini.{% endif %}</p></div>{% endif %}
+  <main class="student-main">
+    <div class="student-container">
+      {% with messages = get_flashed_messages(with_categories=true) %}{% for category, message in messages %}
+      <div class="cc-alert cc-alert-{{ category }}">{{ message }}</div>
+      {% endfor %}{% endwith %}
+
+      <section class="student-hero">
+        <div class="student-hero-glow student-glow-one"></div><div class="student-hero-glow student-glow-two"></div>
+        <div class="student-hero-content">
+          <div class="student-eyebrow"><i></i>Portal Mahasiswa Aktif</div>
+          <h1>Selamat datang kembali,<br>{{ current_user.full_name }} 👋</h1>
+          <div class="student-identity">
+            {% if current_user.nim %}<span>NIM: {{ current_user.nim }}</span><b>•</b>{% endif %}
+            <span>Mahasiswa CampusCare</span>
+          </div>
+          <p>Pantau perkembangan perbaikan sarana prasarana kampus Anda secara transparan, terstruktur, dan akuntabel hingga tuntas.</p>
+          <div class="student-hero-actions">
+            <a class="student-btn student-btn-lime" href="{{ url_for('pages.student_create_report') }}"><span class="material-symbols-outlined">add_circle</span>+ Buat Laporan Baru</a>
+            <a class="student-btn student-btn-dark" href="{{ url_for('pages.student_reports') }}"><span class="material-symbols-outlined">travel_explore</span>Lihat Laporan Saya</a>
+          </div>
+        </div>
       </section>
-      <footer class="cc-dashboard-footer">© 2026 CampusCare · Sistem Sarpras Terpadu</footer>
+
+      <section class="student-stats">
+        {% for stat in stats %}
+        <article class="student-stat-card">
+          <div class="student-stat-top"><span>{{ stat.label }}</span><span class="student-stat-icon {{ stat.tone }}"><span class="material-symbols-outlined">{{ stat.icon }}</span></span></div>
+          <div class="student-stat-number">{{ stat.value }} <small>Tiket</small></div>
+          <div class="student-stat-foot">
+            {% if loop.index == 1 %}<span class="material-symbols-outlined">calendar_month</span>Seluruh laporan Anda
+            {% elif loop.index == 2 %}<span class="material-symbols-outlined">schedule</span>Menunggu pemeriksaan petugas
+            {% elif loop.index == 3 %}<span class="material-symbols-outlined">engineering</span>Dalam proses penanganan
+            {% else %}<span class="material-symbols-outlined">verified</span>Penanganan telah selesai{% endif %}
+          </div>
+        </article>
+        {% endfor %}
+      </section>
+
+      <section class="student-content-grid">
+        <div class="student-report-column">
+          <div class="student-section-heading"><div><h2>Laporan Pengaduan Saya</h2><p>Daftar laporan sarana prasarana yang Anda kirimkan</p></div><a href="{{ url_for('pages.student_reports') }}">Lihat semua <span class="material-symbols-outlined">arrow_forward</span></a></div>
+          {% if reports %}
+            {% for report in reports %}
+            <article class="student-ticket-card">
+              <div class="student-ticket-top"><div><div class="student-ticket-tags"><span class="student-ticket-number">#CC-{{ report.id }}</span><span class="student-status status-{{ report.status }}">{{ report.status|replace('_',' ')|title }}</span></div><h3>{{ report.title }}</h3></div><span class="student-ticket-symbol"><span class="material-symbols-outlined">construction</span></span></div>
+              <div class="student-ticket-meta"><span><span class="material-symbols-outlined">location_on</span>{{ report.location.name }}{% if report.location.building %}, {{ report.location.building }}{% endif %}{% if report.location.floor %} Lt. {{ report.location.floor }}{% endif %}</span><span><span class="material-symbols-outlined">category</span>{{ report.category.name }}</span></div>
+              <p class="student-ticket-description">{{ report.description|truncate(180, True, '...') }}</p>
+              {% if report.responses %}
+              {% set latest_response = report.responses|sort(attribute='created_at')|last %}
+              <div class="student-progress-note"><strong><span class="material-symbols-outlined">forum</span> Tanggapan terbaru dari petugas</strong><p>{{ latest_response.message|truncate(180, True, '...') }}</p></div>
+              {% endif %}
+              <div class="student-ticket-bottom"><span><span class="material-symbols-outlined">schedule</span>Dilaporkan {{ report.created_at.strftime('%d %B %Y, %H:%M') if report.created_at else '-' }}</span><a href="{{ url_for('pages.student_report_detail', report_id=report.id) }}">Rincian Tiket <span class="material-symbols-outlined">arrow_forward</span></a></div>
+            </article>
+            {% endfor %}
+            <div class="student-all-reports"><a href="{{ url_for('pages.student_reports') }}">Lihat Seluruh Laporan Saya <span class="material-symbols-outlined">arrow_forward</span></a></div>
+          {% else %}
+            <div class="student-empty"><span class="material-symbols-outlined">assignment</span><h3>Belum ada laporan</h3><p>Laporan yang Anda buat akan muncul di bagian ini.</p><a class="student-btn student-btn-lime" href="{{ url_for('pages.student_create_report') }}">Buat Laporan Pertama</a></div>
+          {% endif %}
+        </div>
+
+        <aside class="student-side-column">
+          <section class="student-side-card">
+            <div class="student-side-title"><span class="student-side-title-icon"><span class="material-symbols-outlined">near_me</span></span><div><h3>Live Tracking</h3><small>{% if latest_report %}Tiket #CC-{{ latest_report.id }}{% else %}Pantau laporan Anda{% endif %}</small></div></div>
+            {% if latest_report %}
+            <div class="student-tracking-report"><strong>{{ latest_report.title }}</strong><span class="student-status status-{{ latest_report.status }}">{{ latest_report.status|replace('_',' ')|title }}</span></div>
+            <div class="student-timeline">
+              <div class="student-timeline-step done"><i><span class="material-symbols-outlined">check</span></i><div><strong>Laporan diterima sistem</strong><small>{{ latest_report.created_at.strftime('%d %b %Y, %H:%M') if latest_report.created_at else '-' }}</small></div></div>
+              <div class="student-timeline-step {{ 'done' if latest_report.status in ['diverifikasi','sedang_diproses','selesai'] else '' }}"><i><span class="material-symbols-outlined">check</span></i><div><strong>Diverifikasi petugas</strong><small>{% if latest_report.status in ['diverifikasi','sedang_diproses','selesai'] %}Laporan telah diverifikasi{% else %}Menunggu verifikasi{% endif %}</small></div></div>
+              <div class="student-timeline-step {{ 'done' if latest_report.status in ['sedang_diproses','selesai'] else '' }}"><i><span class="material-symbols-outlined">handyman</span></i><div><strong>Proses penanganan</strong><small>{% if latest_report.status in ['sedang_diproses','selesai'] %}Sedang atau telah ditangani{% else %}Belum masuk tahap penanganan{% endif %}</small></div></div>
+              <div class="student-timeline-step {{ 'done' if latest_report.status == 'selesai' else '' }}"><i><span class="material-symbols-outlined">task_alt</span></i><div><strong>Penyelesaian laporan</strong><small>{% if latest_report.status == 'selesai' %}Laporan telah selesai{% else %}Menunggu penyelesaian{% endif %}</small></div></div>
+            </div>
+            <a class="student-side-link" href="{{ url_for('pages.student_report_detail', report_id=latest_report.id) }}">Lihat detail tracking <span class="material-symbols-outlined">arrow_forward</span></a>
+            {% else %}
+            <div class="student-no-tracking"><p>Belum ada laporan yang dapat dilacak. Buat laporan untuk mulai memantau proses penanganannya.</p><a href="{{ url_for('pages.student_create_report') }}">Buat laporan <span class="material-symbols-outlined">arrow_forward</span></a></div>
+            {% endif %}
+          </section>
+
+          <section class="student-side-card">
+            <div class="student-side-heading"><span class="material-symbols-outlined">campaign</span><h3>Informasi Sarpras</h3></div>
+            <div class="student-announcement"><span class="student-announcement-label">Informasi layanan</span><h4>Saluran Pelaporan Fasilitas Kampus</h4><p>Gunakan CampusCare untuk melaporkan kerusakan fasilitas. Sertakan lokasi yang jelas dan foto pendukung agar petugas lebih mudah melakukan pemeriksaan.</p></div>
+            <div class="student-announcement-foot"><span>Informasi umum CampusCare</span><a href="{{ url_for('pages.student_create_report') }}">Buat laporan</a></div>
+          </section>
+
+          <section class="student-tips"><div><span class="material-symbols-outlined">lightbulb</span>Tips Pelaporan Efektif</div><p>Sertakan foto kondisi fasilitas dan lokasi yang spesifik saat membuat laporan agar petugas dapat memahami masalah dengan lebih cepat.</p></section>
+        </aside>
+      </section>
     </div>
   </main>
+
+  <footer class="student-footer">
+    <div class="student-footer-grid">
+      <div class="student-footer-about"><div class="student-footer-brand"><span class="student-brand-icon"><span class="material-symbols-outlined">domain</span></span><strong>CampusCare</strong></div><p>Sistem pelaporan dan pemantauan sarana prasarana kampus terpadu. Transparan, terstruktur, dan akuntabel demi kenyamanan civitas akademika.</p><span class="student-footer-badge"><span class="material-symbols-outlined">verified</span>Portal Pelaporan Kampus</span></div>
+      <div><h4>Tautan Cepat</h4><a href="{{ url_for('auth.home') }}">Beranda</a><a href="{{ url_for('pages.student_reports') }}">Laporan Saya</a><a href="{{ url_for('pages.student_create_report') }}">Buat Laporan</a></div>
+      <div><h4>Akun</h4><a href="{{ url_for('pages.student_dashboard') }}">Dashboard</a><a href="{{ url_for('auth.logout') }}">Keluar</a></div>
+      <div><h4>Pusat Bantuan</h4><p>Gunakan halaman detail laporan untuk membaca tanggapan dan perkembangan penanganan dari petugas kampus.</p></div>
+    </div>
+    <div class="student-footer-bottom"><span>© 2026 CampusCare · Sistem Sarpras Terpadu</span><span>Transparan · Terstruktur · Akuntabel</span></div>
+  </footer>
 </div>
+{% else %}
+<div class="cc-dashboard">
+  <header class="cc-app-header"><div class="cc-app-header-inner">
+    <a class="cc-brand" href="{{ url_for('pages.' + dashboard_type + '_dashboard') }}"><span class="cc-brand-mark">C</span><span><span class="cc-brand-name">Campus<span>Care</span></span><span class="cc-brand-caption">SISTEM SARPRAS TERPADU</span></span></a>
+    <nav class="cc-app-nav"><a class="active" href="{{ url_for('pages.' + dashboard_type + '_dashboard') }}">Dashboard</a>{% if dashboard_type == 'campus' %}<a href="{{ url_for('pages.campus_reports') }}">Laporan Masuk</a>{% else %}<a href="{{ url_for('pages.admin_users') }}">Pengguna</a><a href="{{ url_for('pages.admin_categories') }}">Kategori</a><a href="{{ url_for('pages.admin_locations') }}">Lokasi</a><a href="{{ url_for('pages.admin_activity') }}">Aktivitas</a>{% endif %}</nav>
+    <div class="cc-app-account"><span class="cc-app-online"><i></i> Sistem aktif</span><span class="cc-app-avatar">{{ current_user.full_name[:1]|upper }}</span><span class="cc-app-account-name"><strong>{{ current_user.full_name }}</strong><small>{{ role_label }}</small></span><a class="cc-app-logout" href="{{ url_for('auth.logout') }}">Keluar</a></div>
+  </div></header>
+  <main class="cc-dashboard-main"><div class="cc-dashboard-content">
+    {% with messages = get_flashed_messages(with_categories=true) %}{% for category, message in messages %}<div class="cc-alert cc-alert-{{ category }}">{{ message }}</div>{% endfor %}{% endwith %}
+    <div class="cc-dashboard-heading"><div><span class="cc-dashboard-kicker">{{ role_label }}</span><h1>{{ page_title }}</h1><p>{{ page_subtitle }}</p></div>{% if dashboard_type == "campus" %}<a class="cc-btn cc-btn-primary" href="{{ url_for('pages.campus_reports') }}">Lihat Laporan</a>{% endif %}</div>
+    <section class="cc-stat-grid">{% for stat in stats %}<article class="cc-stat-card"><div class="cc-stat-top"><span>{{ stat.label }}</span><span class="cc-stat-icon {{ stat.tone }}">{{ stat.icon }}</span></div><strong>{{ stat.value }}</strong><small>Data saat ini</small></article>{% endfor %}</section>
+    <section class="cc-table-panel"><div class="cc-table-heading"><div><h2>Laporan Terbaru</h2><p>Informasi laporan yang tersimpan di CampusCare.</p></div><span class="cc-table-count">{{ reports|length }} data</span></div>{% if reports %}<div class="cc-table-wrap"><table class="cc-data-table"><thead><tr><th>Informasi Laporan</th><th>Pelapor</th><th>Lokasi</th><th>Tanggal</th><th>Status</th></tr></thead><tbody>{% for report in reports %}<tr><td><strong><a class="cc-table-link" href="{{ url_for('pages.campus_report_detail', report_id=report.id) if dashboard_type == 'campus' else '#' }}">{{ report.title }}</a></strong><small>{{ report.category.name }}</small></td><td>{{ report.user.full_name }}</td><td>{{ report.location.name }}</td><td>{{ report.created_at.strftime('%d %b %Y') if report.created_at else '-' }}</td><td><span class="cc-status status-{{ report.status }}">{{ report.status|replace('_',' ')|title }}</span></td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="cc-empty-state"><strong>Belum ada laporan</strong></div>{% endif %}</section>
+    <footer class="cc-dashboard-footer">© 2026 CampusCare · Sistem Sarpras Terpadu</footer>
+  </div></main>
+</div>
+{% endif %}
 {% endblock %}
