@@ -1,11 +1,18 @@
 from flask import Flask
 from config import Config
 from app.extensions import db, login_manager
+from flask_cors import CORS
 
 
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+    app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024
+    CORS(
+    app,
+    origins=["http://127.0.0.1:5500", "http://localhost:5500"],
+    supports_credentials=True
+)
 
     db.init_app(app)
     login_manager.init_app(app)
