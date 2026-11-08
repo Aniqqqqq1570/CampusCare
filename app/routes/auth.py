@@ -82,13 +82,13 @@ def login():
 
             # Arahkan pengguna berdasarkan role
             if user.role == 'admin':
-                return redirect(url_for('admin.dashboard'))
+                return redirect(url_for('pages.admin_dashboard'))
 
             elif user.role == 'kampus':
-                return redirect(url_for('campus.dashboard'))
+                return redirect(url_for('pages.campus_dashboard'))
 
             else:
-                return redirect(url_for('student.dashboard'))
+                return redirect(url_for('pages.student_dashboard'))
 
         flash('Email atau password salah.', 'danger')
 
@@ -100,13 +100,13 @@ def login():
 @login_required
 def dashboard():
     if current_user.role == 'admin':
-        return redirect(url_for('admin.dashboard'))
+        return redirect(url_for('pages.admin_dashboard'))
 
     elif current_user.role == 'kampus':
-        return redirect(url_for('campus.dashboard'))
+        return redirect(url_for('pages.campus_dashboard'))
 
     else:
-        return redirect(url_for('student.dashboard'))
+        return redirect(url_for('pages.student_dashboard'))
 
 
 # LOGOUT
