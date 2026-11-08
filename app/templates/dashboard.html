@@ -101,11 +101,15 @@
             <div class="student-side-title"><span class="student-side-title-icon"><span class="material-symbols-outlined">near_me</span></span><div><h3>Live Tracking</h3><small>{% if latest_report %}Tiket #CC-{{ latest_report.id }}{% else %}Pantau laporan Anda{% endif %}</small></div></div>
             {% if latest_report %}
             <div class="student-tracking-report"><strong>{{ latest_report.title }}</strong><span class="student-status status-{{ latest_report.status }}">{{ latest_report.status|replace('_',' ')|title }}</span></div>
+            <div class="student-tracking-officer">
+              <span class="material-symbols-outlined">support_agent</span>
+              <span><small>Petugas terakhir menanggapi</small><strong>{% if latest_report.responses %}{{ (latest_report.responses|sort(attribute='created_at')|last).user.full_name }}{% else %}Belum ada petugas{% endif %}</strong></span>
+            </div>
             <div class="student-timeline">
               <div class="student-timeline-step done"><i><span class="material-symbols-outlined">check</span></i><div><strong>Laporan diterima sistem</strong><small>{{ latest_report.created_at.strftime('%d %b %Y, %H:%M') if latest_report.created_at else '-' }}</small></div></div>
-              <div class="student-timeline-step {{ 'done' if latest_report.status in ['diverifikasi','sedang_diproses','selesai'] else '' }}"><i><span class="material-symbols-outlined">check</span></i><div><strong>Diverifikasi petugas</strong><small>{% if latest_report.status in ['diverifikasi','sedang_diproses','selesai'] %}Laporan telah diverifikasi{% else %}Menunggu verifikasi{% endif %}</small></div></div>
-              <div class="student-timeline-step {{ 'done' if latest_report.status in ['sedang_diproses','selesai'] else '' }}"><i><span class="material-symbols-outlined">handyman</span></i><div><strong>Proses penanganan</strong><small>{% if latest_report.status in ['sedang_diproses','selesai'] %}Sedang atau telah ditangani{% else %}Belum masuk tahap penanganan{% endif %}</small></div></div>
-              <div class="student-timeline-step {{ 'done' if latest_report.status == 'selesai' else '' }}"><i><span class="material-symbols-outlined">task_alt</span></i><div><strong>Penyelesaian laporan</strong><small>{% if latest_report.status == 'selesai' %}Laporan telah selesai{% else %}Menunggu penyelesaian{% endif %}</small></div></div>
+              {% for response in latest_report.responses|sort(attribute='created_at') %}
+              <div class="student-timeline-step done"><i><span class="material-symbols-outlined">forum</span></i><div><strong>{{ response.status_update|replace('_',' ')|title if response.status_update else 'Tanggapan petugas' }}</strong><small>{{ response.message|truncate(100, True, '...') }} · {{ response.created_at.strftime('%d %b %Y, %H:%M') if response.created_at else '' }}</small></div></div>
+              {% endfor %}
             </div>
             <a class="student-side-link" href="{{ url_for('pages.student_report_detail', report_id=latest_report.id) }}">Lihat detail tracking <span class="material-symbols-outlined">arrow_forward</span></a>
             {% else %}
