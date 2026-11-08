@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}CampusCare | Sistem Sarpras Terpadu{% endblock %}
+{% block content %}
+<header class="cc-navbar">
+  <div class="cc-container cc-nav-inner">
+    <a class="cc-brand" href="{{ url_for('auth.home') }}">
+      <span class="cc-brand-mark">C</span>
+      <span><span class="cc-brand-name">Campus<span>Care</span></span><span class="cc-brand-caption">SISTEM SARPRAS TERPADU</span></span>
+    </a>
+    <nav class="cc-nav-links">
+      <a href="#fitur">Fitur</a><a href="#cara-kerja">Cara Kerja</a><a href="#transparansi">Transparansi</a><a href="#faq">FAQ</a>
+    </nav>
+    <div class="cc-nav-actions">
+      <a class="cc-link-muted" href="{{ url_for('auth.login') }}">Masuk</a>
+      <a class="cc-btn cc-btn-primary" href="{{ url_for('auth.register') }}">Buat Laporan <span>↗</span></a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="cc-hero">
+    <div class="cc-container cc-hero-grid">
+      <div>
+        <span class="cc-eyebrow"><span class="cc-dot"></span> Satu platform untuk fasilitas kampus</span>
+        <h1>Laporkan Kerusakan Fasilitas Kampus, <em>Pantau Penanganannya.</em></h1>
+        <p class="cc-hero-copy">Sampaikan laporan kerusakan sarana dan prasarana kampus dengan mudah. Pantau perkembangan laporanmu melalui satu sistem yang terpusat.</p>
+        <div class="cc-hero-actions">
+          <a class="cc-btn cc-btn-primary" href="{{ url_for('auth.register') }}">Mulai Buat Laporan <span>→</span></a>
+          <a class="cc-btn cc-btn-outline" href="#cara-kerja">Pelajari Cara Kerja</a>
+        </div>
+        <div class="cc-proof">
+          <span><b>✓</b> Pelaporan terstruktur</span>
+          <span><b>✓</b> Status dapat dipantau</span>
+          <span><b>✓</b> Riwayat tersimpan</span>
+        </div>
+      </div>
+      <div class="cc-preview" aria-label="Ilustrasi dashboard CampusCare">
+        <div class="cc-preview-top"><span class="cc-preview-title">Ringkasan Pelaporan</span><span class="cc-live">● SISTEM TERPADU</span></div>
+        <div class="cc-preview-stat">
+          <div class="cc-mini-stat"><strong>01</strong><small>Buat laporan</small></div>
+          <div class="cc-mini-stat"><strong>02</strong><small>Pemeriksaan</small></div>
+          <div class="cc-mini-stat"><strong>03</strong><small>Penanganan</small></div>
+        </div>
+        <div class="cc-preview-list">
+          <div class="cc-preview-row"><span class="cc-preview-icon">⌁</span><div><strong>Pelaporan fasilitas</strong><small>Informasi kerusakan tersimpan</small></div><span class="cc-preview-pill">TERCATAT</span></div>
+          <div class="cc-preview-row"><span class="cc-preview-icon">◎</span><div><strong>Pemeriksaan laporan</strong><small>Ditinjau oleh pihak kampus</small></div><span class="cc-preview-pill">DIPANTAU</span></div>
+          <div class="cc-preview-row"><span class="cc-preview-icon">✓</span><div><strong>Riwayat penanganan</strong><small>Perkembangan terdokumentasi</small></div><span class="cc-preview-pill">TERARSIP</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cc-section" id="fitur">
+    <div class="cc-container">
+      <div class="cc-section-heading"><span class="cc-section-kicker">Fitur CampusCare</span><h2>Pelaporan fasilitas jadi lebih terarah</h2><p>Semua proses utama tersedia dalam satu tempat, dari pengajuan laporan sampai melihat riwayat penanganan.</p></div>
+      <div class="cc-card-grid">
+        <article class="cc-card"><div class="cc-card-icon">＋</div><h3>Pelaporan Terstruktur</h3><p>Isi informasi kerusakan, pilih kategori dan lokasi, lalu sertakan foto jika diperlukan.</p></article>
+        <article class="cc-card"><div class="cc-card-icon">◎</div><h3>Pantau Status</h3><p>Lihat tahapan laporan mulai dari menunggu verifikasi hingga selesai ditangani.</p></article>
+        <article class="cc-card"><div class="cc-card-icon">↺</div><h3>Riwayat Tersimpan</h3><p>Akses kembali laporan yang pernah dibuat beserta informasi perkembangannya.</p></article>
+        <article class="cc-card"><div class="cc-card-icon">▤</div><h3>Pengelolaan Terpusat</h3><p>Pihak kampus dan admin mengelola laporan serta data pendukung sesuai kewenangan.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="cc-section" id="cara-kerja" style="background:#edf4f1">
+    <div class="cc-container">
+      <div class="cc-section-heading"><span class="cc-section-kicker">Alur Pelaporan</span><h2>Empat langkah yang mudah diikuti</h2><p>Proses pelaporan dibuat sederhana agar informasi kerusakan dapat diteruskan dengan jelas.</p></div>
+      <div class="cc-steps">
+        <article class="cc-step"><span class="cc-step-number">LANGKAH 01</span><h3>Masuk ke akun</h3><p>Gunakan akun CampusCare untuk mengakses fitur pelaporan.</p></article>
+        <article class="cc-step"><span class="cc-step-number">LANGKAH 02</span><h3>Kirim laporan</h3><p>Lengkapi judul, deskripsi, kategori, lokasi, dan foto pendukung.</p></article>
+        <article class="cc-step"><span class="cc-step-number">LANGKAH 03</span><h3>Laporan ditinjau</h3><p>Pihak kampus memeriksa laporan dan memperbarui statusnya.</p></article>
+        <article class="cc-step"><span class="cc-step-number">LANGKAH 04</span><h3>Pantau hasil</h3><p>Lihat status terbaru dan tanggapan melalui akunmu.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="cc-section" id="transparansi">
+    <div class="cc-container">
+      <div class="cc-cta"><div><h2>Fasilitas kampus yang lebih terawat dimulai dari laporanmu.</h2><p>Sampaikan kendala fasilitas dengan informasi yang jelas agar dapat ditindaklanjuti.</p></div><a class="cc-btn cc-btn-primary" href="{{ url_for('auth.register') }}">Mulai Sekarang <span>→</span></a></div>
+    </div>
+  </section>
+</main>
+<footer class="cc-footer"><div class="cc-container cc-footer-inner"><span>© {{ 2026 }} CampusCare · Sistem Sarpras Terpadu</span><span>Dirancang untuk mendukung lingkungan kampus yang lebih terawat.</span></div></footer>
+{% endblock %}
