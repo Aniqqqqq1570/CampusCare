@@ -183,14 +183,16 @@ def admin_users():
         password = request.form.get('password', '')
         role = request.form.get('role', 'mahasiswa')
         nim = request.form.get('nim', '').strip() or None
-        if not name or not email or len(password) < 8 or role not in ['mahasiswa', 'kampus', 'admin']:
+        study_program = request.form.get('study_program', '').strip() or None
+        faculty = request.form.get('faculty', '').strip() or None
+        if not name or not email or len(password) < 8 or role not in ['mahasiswa', 'kampus', 'admin'] or (role == 'mahasiswa' and (not study_program or not faculty)):
             flash('Periksa kembali data pengguna. Password minimal 8 karakter.', 'danger')
             return redirect(url_for('pages.admin_users'))
         if User.query.filter_by(email=email).first() or (nim and User.query.filter_by(nim=nim).first()):
             flash('Email atau NIM sudah digunakan.', 'danger')
             return redirect(url_for('pages.admin_users'))
-        user = User(full_name=name, nim=nim, email=email,
-            password_hash=generate_password_hash(password), role=role)
+        user = User(full_name=name, nim=nim, study_program=study_program, faculty=faculty,
+            email=email, password_hash=generate_password_hash(password), role=role)
         db.session.add(user)
         db.session.add(ActivityLog(user_id=current_user.id, action='create_user',
             description=f'Membuat akun {email}'))
