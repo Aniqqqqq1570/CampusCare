@@ -1,29 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ page_title }} | CampusCare{% if workspace == 'public_reports' %}
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const search = document.getElementById('publicReportSearch');
-  const status = document.getElementById('publicReportStatus');
-  const cards = Array.from(document.querySelectorAll('.cc-public-card'));
-  const empty = document.getElementById('publicReportNoResults');
-  function filterPublicReports() {
-    const term = (search.value || '').trim().toLocaleLowerCase('id');
-    const selectedStatus = status.value;
-    let visible = 0;
-    cards.forEach(function (card) {
-      const matchesText = !term || card.dataset.search.includes(term);
-      const matchesStatus = !selectedStatus || card.dataset.status === selectedStatus;
-      card.hidden = !(matchesText && matchesStatus);
-      if (!card.hidden) visible += 1;
-    });
-    if (empty) empty.hidden = visible !== 0;
-  }
-  search.addEventListener('input', filterPublicReports);
-  status.addEventListener('change', filterPublicReports);
-});
-</script>
-{% endif %}
-{% endblock %}
+{% block title %}{{ page_title }} | CampusCare{% endblock %}
 {% block content %}
 <div class="cc-dashboard">
   <header class="cc-app-header">
@@ -152,4 +128,30 @@ document.addEventListener('DOMContentLoaded', function () {
     </div>
   </main>
 </div>
+{% if workspace == 'public_reports' %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const search = document.getElementById('publicReportSearch');
+  const status = document.getElementById('publicReportStatus');
+  const cards = Array.from(document.querySelectorAll('.cc-public-card'));
+  const empty = document.getElementById('publicReportNoResults');
+  function filterPublicReports() {
+    const term = (search.value || '').trim().toLocaleLowerCase('id');
+    const selectedStatus = status.value;
+    let visible = 0;
+    cards.forEach(function (card) {
+      const matchesText = !term || card.dataset.search.includes(term);
+      const matchesStatus = !selectedStatus || card.dataset.status === selectedStatus;
+      card.hidden = !(matchesText && matchesStatus);
+      if (!card.hidden) visible += 1;
+    });
+    if (empty) empty.hidden = visible !== 0;
+  }
+  if (search && status) {
+    search.addEventListener('input', filterPublicReports);
+    status.addEventListener('change', filterPublicReports);
+  }
+});
+</script>
+{% endif %}
 {% endblock %}
