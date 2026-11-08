@@ -22,6 +22,8 @@
         <form method="POST" action="{{ url_for('auth.register') }}">
           <div class="cc-field"><label for="full_name">NAMA LENGKAP</label><input class="cc-input" type="text" id="full_name" name="full_name" placeholder="Nama lengkap" autocomplete="name" required></div>
           <div class="cc-field"><label for="nim">NIM</label><input class="cc-input" type="text" id="nim" name="nim" placeholder="Nomor induk mahasiswa" required></div>
+          <div class="cc-field"><label for="study_program">PROGRAM STUDI</label><input class="cc-input" type="text" id="study_program" name="study_program" placeholder="Contoh: Informatika" required></div>
+          <div class="cc-field"><label for="faculty">FAKULTAS</label><input class="cc-input" type="text" id="faculty" name="faculty" placeholder="Nama fakultas" required></div>
           <div class="cc-field"><label for="email">EMAIL</label><input class="cc-input" type="email" id="email" name="email" placeholder="nama@email.com" autocomplete="email" required></div>
           <div class="cc-field"><label for="password">KATA SANDI</label><input class="cc-input" type="password" id="password" name="password" placeholder="Minimal 8 karakter" minlength="8" autocomplete="new-password" required><p class="cc-form-hint">Gunakan minimal 8 karakter untuk kata sandi akunmu.</p></div>
           <button class="cc-btn cc-btn-primary cc-btn-block" type="submit">Buat Akun CampusCare <span>→</span></button>
