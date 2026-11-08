@@ -23,11 +23,13 @@ def create_app():
     )
 
     from app.routes.auth import auth
+    from app.routes.pages import pages
     from app.routes.student import student
     from app.routes.admin import admin
     from app.routes.campus import campus
 
     app.register_blueprint(auth)
+    app.register_blueprint(pages)
     app.register_blueprint(student)
     app.register_blueprint(admin)
     app.register_blueprint(campus)
