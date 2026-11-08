@@ -16,13 +16,18 @@ def status_count(query, status):
 @role_required('mahasiswa')
 def student_dashboard():
     query = Report.query.filter_by(user_id=current_user.id)
-    reports = query.order_by(Report.created_at.desc()).limit(8).all()
+    reports = query.order_by(Report.created_at.desc()).limit(3).all()
+    latest_report = reports[0] if reports else None
+    total = query.count()
     stats = [
-        {'label': 'Total laporan', 'value': query.count(), 'icon': '▤', 'tone': 'lime'},
-        {'label': 'Menunggu verifikasi', 'value': status_count(query, 'menunggu_verifikasi'), 'icon': '◷', 'tone': 'amber'},
-        {'label': 'Sedang diproses', 'value': status_count(query, 'sedang_diproses'), 'icon': '↻', 'tone': 'teal'},
-        {'label': 'Selesai', 'value': status_count(query, 'selesai'), 'icon': '✓', 'tone': 'green'}]
-    return render_template('dashboard.html', page_title='Dashboard Mahasiswa', page_subtitle='Pantau laporan fasilitas yang kamu kirimkan.', role_label='Mahasiswa', stats=stats, reports=reports, dashboard_type='student')
+        {'label': 'Total laporan saya', 'value': total, 'icon': 'assignment', 'tone': 'verified'},
+        {'label': 'Menunggu verifikasi', 'value': status_count(query, 'menunggu_verifikasi'), 'icon': 'schedule', 'tone': 'waiting'},
+        {'label': 'Sedang ditangani', 'value': status_count(query, 'sedang_diproses'), 'icon': 'engineering', 'tone': 'process'},
+        {'label': 'Selesai & ditutup', 'value': status_count(query, 'selesai'), 'icon': 'task_alt', 'tone': 'done'}]
+    return render_template('dashboard.html', page_title='Dashboard Mahasiswa',
+        page_subtitle='Pantau perkembangan perbaikan sarana prasarana kampus.',
+        role_label='Mahasiswa', stats=stats, reports=reports,
+        latest_report=latest_report, dashboard_type='student')
 
 @pages.route('/kampus/dashboard')
 @login_required
