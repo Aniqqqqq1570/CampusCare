@@ -4,13 +4,21 @@
 <div class="cc-dashboard">
 <aside class="cc-sidebar">
 <a class="cc-brand cc-sidebar-brand" href="{{ url_for('auth.home') }}"><span class="cc-brand-mark">C</span><span><span class="cc-brand-name">Campus<span>Care</span></span><span class="cc-brand-caption">SISTEM SARPRAS TERPADU</span></span></a>
-<div class="cc-sidebar-label">MENU UTAMA</div><a class="cc-side-link active" href="{{ url_for('pages.' + dashboard_type + '_dashboard') }}"><span>▦</span> Dashboard</a>
+<div class="cc-sidebar-label">MENU UTAMA</div>
+<a class="cc-side-link active" href="{{ url_for('pages.' + dashboard_type + '_dashboard') }}"><span>▦</span> Dashboard</a>
+{% if dashboard_type == 'student' %}
+<a class="cc-side-link" href="{{ url_for('pages.student_reports') }}"><span>▤</span> Riwayat Laporan</a>
+<a class="cc-side-link" href="{{ url_for('pages.student_create_report') }}"><span>＋</span> Buat Laporan</a>
+{% elif dashboard_type == 'campus' %}
+<a class="cc-side-link" href="{{ url_for('pages.campus_reports') }}"><span>▤</span> Laporan Masuk</a>
+{% endif %}
 <div class="cc-sidebar-bottom"><div class="cc-user-card"><div class="cc-user-avatar">{{ current_user.full_name[:1]|upper }}</div><div class="cc-user-info"><strong>{{ current_user.full_name }}</strong><small>{{ role_label }}</small></div></div><a class="cc-side-link cc-logout" href="{{ url_for('auth.logout') }}"><span>↪</span> Keluar</a></div>
 </aside>
 <main class="cc-dashboard-main">
 <header class="cc-dashboard-topbar"><div class="cc-mobile-brand"><span class="cc-brand-mark">C</span><strong>Campus<span>Care</span></strong></div><div class="cc-topbar-right"><span class="cc-topbar-status"><i></i> Sistem aktif</span><span class="cc-topbar-avatar">{{ current_user.full_name[:1]|upper }}</span></div></header>
 <div class="cc-dashboard-content">
-<div class="cc-dashboard-heading"><div><span class="cc-dashboard-kicker">{{ role_label }}</span><h1>{{ page_title }}</h1><p>{{ page_subtitle }}</p></div></div>
+{% with messages = get_flashed_messages(with_categories=true) %}{% for category, message in messages %}<div class="cc-alert cc-alert-{{ category }}">{{ message }}</div>{% endfor %}{% endwith %}
+<div class="cc-dashboard-heading"><div><span class="cc-dashboard-kicker">{{ role_label }}</span><h1>{{ page_title }}</h1><p>{{ page_subtitle }}</p></div>{% if dashboard_type == "student" %}<a class="cc-btn cc-btn-primary" href="{{ url_for("pages.student_create_report") }}">＋ Buat Laporan</a>{% elif dashboard_type == "campus" %}<a class="cc-btn cc-btn-primary" href="{{ url_for("pages.campus_reports") }}">Lihat Laporan</a>{% endif %}</div>
 <section class="cc-stat-grid">{% for stat in stats %}<article class="cc-stat-card"><div class="cc-stat-top"><span>{{ stat.label }}</span><span class="cc-stat-icon {{ stat.tone }}">{{ stat.icon }}</span></div><strong>{{ stat.value }}</strong><small>Data saat ini</small></article>{% endfor %}</section>
 {% if overview %}<section class="cc-overview-grid">{% for item in overview %}<article class="cc-overview-card"><span>{{ item.label }}</span><strong>{{ item.value }}</strong></article>{% endfor %}</section>{% endif %}
 <section class="cc-table-panel"><div class="cc-table-heading"><div><h2>Laporan Terbaru</h2><p>Informasi laporan yang tersimpan di CampusCare.</p></div><span class="cc-table-count">{{ reports|length }} data</span></div>
