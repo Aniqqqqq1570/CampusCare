@@ -161,3 +161,112 @@ def campus_report_detail(report_id):
         role_label='Petugas Kampus', workspace='campus_report_detail',
         report=report, responses=report.responses,
         allowed_statuses=transitions.get(report.status, []))
+
+
+from werkzeug.security import generate_password_hash
+
+
+@pages.route('/admin/pengguna', methods=['GET', 'POST'])
+@login_required
+@role_required('admin')
+def admin_users():
+    if request.method == 'POST':
+        name = request.form.get('full_name', '').strip()
+        email = request.form.get('email', '').strip().lower()
+        password = request.form.get('password', '')
+        role = request.form.get('role', 'mahasiswa')
+        nim = request.form.get('nim', '').strip() or None
+        if not name or not email or len(password) < 8 or role not in ['mahasiswa', 'kampus', 'admin']:
+            flash('Periksa kembali data pengguna. Password minimal 8 karakter.', 'danger')
+            return redirect(url_for('pages.admin_users'))
+        if User.query.filter_by(email=email).first() or (nim and User.query.filter_by(nim=nim).first()):
+            flash('Email atau NIM sudah digunakan.', 'danger')
+            return redirect(url_for('pages.admin_users'))
+        user = User(full_name=name, nim=nim, email=email,
+            password_hash=generate_password_hash(password), role=role)
+        db.session.add(user)
+        db.session.add(ActivityLog(user_id=current_user.id, action='create_user',
+            description=f'Membuat akun {email}'))
+        db.session.commit()
+        flash('Pengguna berhasil ditambahkan.', 'success')
+        return redirect(url_for('pages.admin_users'))
+    users = User.query.order_by(User.created_at.desc()).all()
+    return render_template('workspace.html', page_title='Manajemen Pengguna',
+        page_subtitle='Kelola akun mahasiswa, petugas kampus, dan administrator.',
+        role_label='Administrator', workspace='admin_users', users=users)
+
+
+@pages.route('/admin/pengguna/<int:user_id>/nonaktifkan', methods=['POST'])
+@login_required
+@role_required('admin')
+def admin_deactivate_user(user_id):
+    user = User.query.get_or_404(user_id)
+    if user.id == current_user.id:
+        flash('Kamu tidak dapat menonaktifkan akun sendiri.', 'danger')
+    else:
+        user.is_active = False
+        db.session.add(ActivityLog(user_id=current_user.id, action='deactivate_user',
+            description=f'Menonaktifkan akun {user.email}'))
+        db.session.commit()
+        flash('Akun pengguna dinonaktifkan.', 'success')
+    return redirect(url_for('pages.admin_users'))
+
+
+@pages.route('/admin/kategori', methods=['GET', 'POST'])
+@login_required
+@role_required('admin')
+def admin_categories():
+    if request.method == 'POST':
+        name = request.form.get('name', '').strip()
+        description = request.form.get('description', '').strip()
+        if not name:
+            flash('Nama kategori wajib diisi.', 'danger')
+        elif Category.query.filter_by(name=name).first():
+            flash('Kategori sudah tersedia.', 'danger')
+        else:
+            db.session.add(Category(name=name, description=description, is_active=True))
+            db.session.add(ActivityLog(user_id=current_user.id, action='create_category',
+                description=f'Menambahkan kategori {name}'))
+            db.session.commit()
+            flash('Kategori berhasil ditambahkan.', 'success')
+        return redirect(url_for('pages.admin_categories'))
+    categories = Category.query.order_by(Category.id.asc()).all()
+    return render_template('workspace.html', page_title='Manajemen Kategori',
+        page_subtitle='Atur jenis kerusakan fasilitas yang dapat dipilih mahasiswa.',
+        role_label='Administrator', workspace='admin_categories', categories=categories)
+
+
+@pages.route('/admin/lokasi', methods=['GET', 'POST'])
+@login_required
+@role_required('admin')
+def admin_locations():
+    if request.method == 'POST':
+        name = request.form.get('name', '').strip()
+        building = request.form.get('building', '').strip()
+        floor = request.form.get('floor', '').strip()
+        description = request.form.get('description', '').strip()
+        if not name:
+            flash('Nama lokasi wajib diisi.', 'danger')
+        else:
+            db.session.add(Location(name=name, building=building, floor=floor,
+                description=description, is_active=True))
+            db.session.add(ActivityLog(user_id=current_user.id, action='create_location',
+                description=f'Menambahkan lokasi {name}'))
+            db.session.commit()
+            flash('Lokasi berhasil ditambahkan.', 'success')
+        return redirect(url_for('pages.admin_locations'))
+    locations = Location.query.order_by(Location.id.asc()).all()
+    return render_template('workspace.html', page_title='Manajemen Lokasi',
+        page_subtitle='Kelola gedung dan lokasi fasilitas kampus.',
+        role_label='Administrator', workspace='admin_locations', locations=locations)
+
+
+@pages.route('/admin/aktivitas')
+@login_required
+@role_required('admin')
+def admin_activity():
+    from app.models.activity_log import ActivityLog
+    logs = ActivityLog.query.order_by(ActivityLog.created_at.desc()).limit(100).all()
+    return render_template('workspace.html', page_title='Riwayat Aktivitas',
+        page_subtitle='Catatan aktivitas pengelolaan sistem CampusCare.',
+        role_label='Administrator', workspace='admin_activity', logs=logs)
