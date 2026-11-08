@@ -11,6 +11,11 @@
 <a class="cc-side-link" href="{{ url_for('pages.student_create_report') }}"><span>＋</span> Buat Laporan</a>
 {% elif dashboard_type == 'campus' %}
 <a class="cc-side-link" href="{{ url_for('pages.campus_reports') }}"><span>▤</span> Laporan Masuk</a>
+{% elif dashboard_type == 'admin' %}
+<a class="cc-side-link" href="{{ url_for('pages.admin_users') }}"><span>♙</span> Pengguna</a>
+<a class="cc-side-link" href="{{ url_for('pages.admin_categories') }}"><span>▧</span> Kategori</a>
+<a class="cc-side-link" href="{{ url_for('pages.admin_locations') }}"><span>⌖</span> Lokasi</a>
+<a class="cc-side-link" href="{{ url_for('pages.admin_activity') }}"><span>◷</span> Aktivitas</a>
 {% endif %}
 <div class="cc-sidebar-bottom"><div class="cc-user-card"><div class="cc-user-avatar">{{ current_user.full_name[:1]|upper }}</div><div class="cc-user-info"><strong>{{ current_user.full_name }}</strong><small>{{ role_label }}</small></div></div><a class="cc-side-link cc-logout" href="{{ url_for('auth.logout') }}"><span>↪</span> Keluar</a></div>
 </aside>
