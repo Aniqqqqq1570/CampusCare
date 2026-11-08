@@ -1,35 +1,35 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register | CampusCare</title>
-</head>
-<body>
-    <h1>Daftar CampusCare</h1>
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% for category, message in messages %}
-            <p>{{ message }}</p>
-        {% endfor %}
-    {% endwith %}
-
-    <form method="POST">
-        <input type="text" name="full_name" placeholder="Nama lengkap" required>
-        <br><br>
-
-        <input type="text" name="nim" placeholder="NIM" required>
-        <br><br>
-
-        <input type="email" name="email" placeholder="Email" required>
-        <br><br>
-
-        <input type="password" name="password" placeholder="Password (minimal 8 karakter)" required>
-        <br><br>
-
-        <button type="submit">Daftar</button>
-    </form>
-
-    <p>Sudah punya akun? <a href="{{ url_for('auth.login') }}">Login</a></p>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Daftar | CampusCare{% endblock %}
+{% block content %}
+<main class="cc-auth-wrap">
+  <div class="cc-auth-shell">
+    <aside class="cc-auth-aside">
+      <a class="cc-brand" href="{{ url_for('auth.home') }}"><span class="cc-brand-mark">C</span><span><span class="cc-brand-name">Campus<span>Care</span></span><span class="cc-brand-caption">SISTEM SARPRAS TERPADU</span></span></a>
+      <div>
+        <span class="cc-eyebrow"><span class="cc-dot"></span> Mulai dari satu laporan</span>
+        <h1>Jadilah bagian dari kampus yang <em>lebih terawat.</em></h1>
+        <p>Buat akun mahasiswa untuk menyampaikan laporan kerusakan sarana dan prasarana serta memantau perkembangannya.</p>
+      </div>
+      <div class="cc-auth-aside-note">Pendaftaran mandiri saat ini ditujukan untuk akun mahasiswa. Akun petugas kampus dan admin dikelola oleh administrator.</div>
+    </aside>
+    <section class="cc-auth-main">
+      <div class="cc-auth-content">
+        <h2>Buat akun baru</h2>
+        <p class="cc-auth-subtitle">Lengkapi data berikut untuk mulai menggunakan CampusCare.</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, message in messages %}<div class="cc-alert cc-alert-{{ category }}">{{ message }}</div>{% endfor %}
+        {% endwith %}
+        <form method="POST" action="{{ url_for('auth.register') }}">
+          <div class="cc-field"><label for="full_name">NAMA LENGKAP</label><input class="cc-input" type="text" id="full_name" name="full_name" placeholder="Nama lengkap" autocomplete="name" required></div>
+          <div class="cc-field"><label for="nim">NIM</label><input class="cc-input" type="text" id="nim" name="nim" placeholder="Nomor induk mahasiswa" required></div>
+          <div class="cc-field"><label for="email">EMAIL</label><input class="cc-input" type="email" id="email" name="email" placeholder="nama@email.com" autocomplete="email" required></div>
+          <div class="cc-field"><label for="password">KATA SANDI</label><input class="cc-input" type="password" id="password" name="password" placeholder="Minimal 8 karakter" minlength="8" autocomplete="new-password" required><p class="cc-form-hint">Gunakan minimal 8 karakter untuk kata sandi akunmu.</p></div>
+          <button class="cc-btn cc-btn-primary cc-btn-block" type="submit">Buat Akun CampusCare <span>→</span></button>
+        </form>
+        <p class="cc-auth-bottom">Sudah punya akun? <a href="{{ url_for('auth.login') }}">Masuk di sini</a></p>
+        <p class="cc-auth-bottom"><a href="{{ url_for('auth.home') }}">← Kembali ke halaman utama</a></p>
+      </div>
+    </section>
+  </div>
+</main>
+{% endblock %}
