@@ -1,5 +1,29 @@
 {% extends "base.html" %}
-{% block title %}{{ page_title }} | CampusCare{% endblock %}
+{% block title %}{{ page_title }} | CampusCare{% if workspace == 'public_reports' %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const search = document.getElementById('publicReportSearch');
+  const status = document.getElementById('publicReportStatus');
+  const cards = Array.from(document.querySelectorAll('.cc-public-card'));
+  const empty = document.getElementById('publicReportNoResults');
+  function filterPublicReports() {
+    const term = (search.value || '').trim().toLocaleLowerCase('id');
+    const selectedStatus = status.value;
+    let visible = 0;
+    cards.forEach(function (card) {
+      const matchesText = !term || card.dataset.search.includes(term);
+      const matchesStatus = !selectedStatus || card.dataset.status === selectedStatus;
+      card.hidden = !(matchesText && matchesStatus);
+      if (!card.hidden) visible += 1;
+    });
+    if (empty) empty.hidden = visible !== 0;
+  }
+  search.addEventListener('input', filterPublicReports);
+  status.addEventListener('change', filterPublicReports);
+});
+</script>
+{% endif %}
+{% endblock %}
 {% block content %}
 <div class="cc-dashboard">
   <header class="cc-app-header">
@@ -38,7 +62,60 @@
       </div><div class="cc-form-actions"><a class="cc-btn cc-btn-ghost" href="{{ url_for('pages.student_dashboard') }}">Batal</a><button class="cc-btn cc-btn-primary" type="submit">Kirim Laporan</button></div></form></section>
 
       {% elif workspace == 'public_reports' %}
-      <section class="cc-table-panel">{% if reports %}<div class="cc-table-wrap"><table class="cc-data-table"><thead><tr><th>Laporan</th><th>Kategori</th><th>Lokasi</th><th>Tanggal</th><th>Status</th><th></th></tr></thead><tbody>{% for item in reports %}<tr><td><strong>{{ item.title }}</strong><small>#CC-{{ item.id }}</small></td><td>{{ item.category.name }}</td><td>{{ item.location.name }}</td><td>{{ item.created_at.strftime('%d %b %Y') if item.created_at else '-' }}</td><td><span class="cc-status status-{{ item.status }}">{{ item.status|replace('_',' ')|title }}</span></td><td>{% if item.user_id == current_user.id %}<a class="cc-table-link" href="{{ url_for('pages.student_report_detail', report_id=item.id) }}">Detail</a>{% else %}Laporan publik{% endif %}</td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="cc-empty-state"><strong>Belum ada laporan publik</strong></div>{% endif %}</section>
+      <section class="cc-public-intro">
+        <div>
+          <span class="cc-public-eyebrow">TRANSPARANSI FASILITAS KAMPUS</span>
+          <h2>Laporan dari komunitas kampus</h2>
+          <p>Lihat masalah fasilitas yang dilaporkan mahasiswa, kenali lokasi yang terdampak, dan ikuti perkembangan penanganannya.</p>
+        </div>
+        <a class="cc-public-create" href="{{ url_for('pages.student_create_report') }}">＋ Buat Laporan</a>
+      </section>
+      <section class="cc-public-toolbar">
+        <div class="cc-public-count"><strong>{{ reports|length }}</strong><span>laporan dibagikan</span></div>
+        <label class="cc-public-search"><span>⌕</span><input id="publicReportSearch" type="search" placeholder="Cari judul, lokasi, kategori, atau pelapor..." aria-label="Cari laporan publik"></label>
+        <select id="publicReportStatus" aria-label="Filter status laporan">
+          <option value="">Semua status</option>
+          <option value="menunggu_verifikasi">Menunggu verifikasi</option>
+          <option value="diverifikasi">Diverifikasi</option>
+          <option value="sedang_diproses">Sedang diproses</option>
+          <option value="selesai">Selesai</option>
+          <option value="ditolak">Ditolak</option>
+        </select>
+      </section>
+      {% if reports %}
+      <section class="cc-public-grid" id="publicReportGrid">
+        {% for item in reports %}
+        <article class="cc-public-card" data-status="{{ item.status }}" data-search="{{ (item.title ~ ' ' ~ item.description ~ ' ' ~ item.category.name ~ ' ' ~ item.location.name ~ ' ' ~ item.user.full_name ~ ' ' ~ (item.user.study_program or '') ~ ' ' ~ (item.user.faculty or ''))|lower }}">
+          <div class="cc-public-card-top">
+            <span class="cc-public-code">CC-{{ '%04d'|format(item.id) }}</span>
+            <span class="cc-status status-{{ item.status }}">{{ item.status|replace('_',' ')|title }}</span>
+          </div>
+          <h3>{{ item.title }}</h3>
+          <p class="cc-public-description">{{ item.description|striptags|truncate(190, True, '…') }}</p>
+          <div class="cc-public-meta">
+            <span>▦ {{ item.category.name }}</span>
+            <span>⌖ {{ item.location.name }}{% if item.location.building %}, {{ item.location.building }}{% endif %}</span>
+            <span>◷ {{ item.created_at.strftime('%d %B %Y') if item.created_at else 'Tanggal tidak tersedia' }}</span>
+          </div>
+          <div class="cc-public-reporter">
+            <span class="cc-public-avatar">{{ item.user.full_name[:1]|upper }}</span>
+            <div><strong>{{ item.user.full_name }}</strong><small>{{ item.user.study_program or 'Program studi belum diisi' }}{% if item.user.faculty %} · {{ item.user.faculty }}{% else %} · Fakultas belum diisi{% endif %}</small></div>
+          </div>
+          <div class="cc-public-card-footer">
+            <span>{{ item.responses|length }} tanggapan petugas</span>
+            {% if item.user_id == current_user.id %}
+              <a href="{{ url_for('pages.student_report_detail', report_id=item.id) }}">Detail laporan →</a>
+            {% else %}
+              <span class="cc-public-readonly">Laporan komunitas</span>
+            {% endif %}
+          </div>
+        </article>
+        {% endfor %}
+      </section>
+      <div class="cc-public-no-results" id="publicReportNoResults" hidden>Tidak ada laporan yang cocok dengan pencarian.</div>
+      {% else %}
+      <div class="cc-public-empty"><span>▤</span><h3>Belum ada laporan publik</h3><p>Laporan fasilitas yang dibagikan mahasiswa akan muncul di halaman ini.</p><a href="{{ url_for('pages.student_create_report') }}">Buat laporan pertama</a></div>
+      {% endif %}
 
       {% elif workspace == 'student_notifications' %}
       <section class="cc-table-panel">{% if notifications %}<div class="cc-table-wrap"><table class="cc-data-table"><thead><tr><th>Laporan</th><th>Tanggapan petugas</th><th>Waktu</th><th>Status</th></tr></thead><tbody>{% for item in notifications %}<tr><td><strong>{{ item.report.title }}</strong><small>#CC-{{ item.report.id }}</small></td><td>{{ item.message }}</td><td>{{ item.created_at.strftime('%d %b %Y, %H:%M') if item.created_at else '-' }}</td><td>{{ item.status_update|replace('_',' ')|title if item.status_update else 'Tanggapan baru' }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="cc-empty-state"><strong>Belum ada notifikasi</strong><p>Tanggapan petugas akan muncul di sini.</p></div>{% endif %}</section>
