@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0B131B">
+  <meta name="description" content="CampusCare - Sistem Sarana dan Prasarana Kampus Terpadu">
+  <title>{% block title %}CampusCare | Sistem Sarpras Terpadu{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/campuscare.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  {% block content %}{% endblock %}
+  {% block scripts %}{% endblock %}
+</body>
+</html>
