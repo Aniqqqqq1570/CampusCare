@@ -26,10 +26,12 @@ def register():
     if request.method == 'POST':
         full_name = request.form.get('full_name', '').strip()
         nim = request.form.get('nim', '').strip()
+        study_program = request.form.get('study_program', '').strip()
+        faculty = request.form.get('faculty', '').strip()
         email = request.form.get('email', '').strip().lower()
         password = request.form.get('password', '')
 
-        if not full_name or not nim or not email or not password:
+        if not full_name or not nim or not study_program or not faculty or not email or not password:
             flash('Semua kolom wajib diisi.', 'danger')
             return redirect(url_for('auth.register'))
 
@@ -48,6 +50,8 @@ def register():
         user = User(
             full_name=full_name,
             nim=nim,
+            study_program=study_program,
+            faculty=faculty,
             email=email,
             password_hash=generate_password_hash(password),
             role='mahasiswa'
