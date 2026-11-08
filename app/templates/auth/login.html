@@ -1,193 +1,33 @@
-
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | CampusCare</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-</head>
-<body>
-
-<div class="login-container">
-
-    <!-- PANEL KIRI -->
-    <section class="brand-panel">
-
-        <div class="brand-logo">
-            <div class="logo-icon">▦</div>
-            <div>
-                <h2>Campus<span>Care</span></h2>
-                <small>INFRASTRUKTUR & SARPRAS</small>
-            </div>
-        </div>
-
-        <div class="system-badge">
-            <span class="online-dot"></span>
-            Sistem Pelaporan Sarpras Terpadu
-        </div>
-
-        <div class="welcome-text">
-            <h1>Selamat Datang<br>Kembali!</h1>
-            <p>
-                Masuk ke CampusCare dan ikut berkontribusi
-                menciptakan lingkungan kampus yang lebih
-                nyaman, aman, dan terawat.
-            </p>
-        </div>
-
-        <div class="monitor-card">
-            <div class="monitor-top">
-                <div class="monitor-icon">▤</div>
-                <div class="monitor-info">
-                    <small>Status Monitoring</small>
-                    <h3>1.368 Laporan Tuntas</h3>
-                </div>
-                <span class="verified">◎ 100% Terverifikasi</span>
-            </div>
-
-            <div class="technician">
-                <span>♟ 24 Teknisi Aktif di Lapangan</span>
-                <strong>Live Tracking</strong>
-            </div>
-        </div>
-
-        <div class="benefits">
-            <div><span>ϟ</span> Pelaporan instan kurang dari 30 detik via akun akademik terverifikasi.</div>
-            <div><span>◉</span> Pelacakan progres perbaikan secara real-time dan transparan.</div>
-            <div><span>♙</span> Terintegrasi langsung dengan Biro Sarana & Prasarana Kampus.</div>
-        </div>
-
-        <div class="security">
-            ♙ Enkripsi Keamanan SSO & Perlindungan Privasi Data Pelapor Civitas
-        </div>
-
+{% extends "base.html" %}
+{% block title %}Masuk | CampusCare{% endblock %}
+{% block content %}
+<main class="cc-auth-wrap">
+  <div class="cc-auth-shell">
+    <aside class="cc-auth-aside">
+      <a class="cc-brand" href="{{ url_for('auth.home') }}"><span class="cc-brand-mark">C</span><span><span class="cc-brand-name">Campus<span>Care</span></span><span class="cc-brand-caption">SISTEM SARPRAS TERPADU</span></span></a>
+      <div>
+        <span class="cc-eyebrow"><span class="cc-dot"></span> Ruang kampus lebih terawat</span>
+        <h1>Kelola laporan fasilitas kampus dengan <em>lebih mudah.</em></h1>
+        <p>Masuk untuk membuat laporan, memantau proses penanganan, atau mengelola fasilitas sesuai peran akunmu.</p>
+      </div>
+      <div class="cc-auth-aside-note">CampusCare membantu menyimpan informasi laporan dan riwayat penanganan secara terpusat.</div>
+    </aside>
+    <section class="cc-auth-main">
+      <div class="cc-auth-content">
+        <h2>Selamat datang kembali</h2>
+        <p class="cc-auth-subtitle">Masuk menggunakan email dan kata sandi akun CampusCare.</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, message in messages %}<div class="cc-alert cc-alert-{{ category }}">{{ message }}</div>{% endfor %}
+        {% endwith %}
+        <form method="POST" action="{{ url_for('auth.login') }}">
+          <div class="cc-field"><label for="email">EMAIL</label><input class="cc-input" type="email" id="email" name="email" placeholder="nama@email.com" autocomplete="username" required></div>
+          <div class="cc-field"><label for="password">KATA SANDI</label><input class="cc-input" type="password" id="password" name="password" placeholder="Masukkan kata sandi" autocomplete="current-password" required></div>
+          <button class="cc-btn cc-btn-primary cc-btn-block" type="submit">Masuk ke CampusCare <span>→</span></button>
+        </form>
+        <p class="cc-auth-bottom">Belum punya akun? <a href="{{ url_for('auth.register') }}">Daftar sebagai mahasiswa</a></p>
+        <p class="cc-auth-bottom"><a href="{{ url_for('auth.home') }}">← Kembali ke halaman utama</a></p>
+      </div>
     </section>
-
-    <!-- PANEL KANAN -->
-    <section class="form-panel">
-
-        <div class="form-content">
-
-            <label class="role-label">PILIH PERAN ANDA</label>
-
-            <div class="role-selector">
-                <button type="button" class="role active">
-                    ♧ Mahasiswa / Dosen
-                </button>
-                <button type="button" class="role">
-                    ⚒ Staf / Teknisi
-                </button>
-                <button type="button" class="role">
-                    ♙ Admin Biro
-                </button>
-            </div>
-
-            <div class="form-heading">
-                <h1>Masuk ke Akun</h1>
-                <p>Silakan masuk menggunakan akun akademik atau kredensial resmi SSO universitas Anda.</p>
-            </div>
-
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endwith %}
-
-            <form method="POST">
-
-                <div class="field-heading">
-                    <label for="email">▣ NIM / NIP / Email Resmi Kampus</label>
-                    <span class="active-status">☁ SIAKAD Aktif</span>
-                </div>
-
-                <div class="input-wrapper">
-                    <span class="input-icon">@</span>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="Contoh: 2108561042 atau nama@univ.ac.id"
-                        required
-                    >
-                </div>
-
-                <div class="field-heading password-heading">
-                    <label for="password">⚿ Kata Sandi Akun</label>
-                </div>
-
-                <div class="input-wrapper">
-                    <span class="input-icon">▣</span>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        placeholder="Masukkan kata sandi portal Anda"
-                        required
-                    >
-                    <button type="button" class="toggle-password" onclick="togglePassword()">◉</button>
-                </div>
-
-                <div class="form-options">
-                    <label class="remember">
-                        <input type="checkbox" name="remember">
-                        Ingat saya di perangkat ini
-                    </label>
-                    <a href="{{ url_for('auth.forgot_password') if false else '#' }}">Lupa Password?</a>
-                </div>
-
-                <button type="submit" class="submit-button">
-                    Masuk ke CampusCare <span>➜</span>
-                </button>
-
-            </form>
-
-            <div class="divider">
-                <span></span>
-                ATAU AKSES CEPAT KAMPUS
-                <span></span>
-            </div>
-
-            <a href="#" class="sso-card">
-                <div class="sso-icon">▦</div>
-                <div>
-                    <strong>SSO Portal Universitas</strong>
-                    <small>Autentikasi Terpusat BAAK & Pusdatin</small>
-                </div>
-                <span class="sso-arrow">→</span>
-            </a>
-
-            <div class="help-card">
-                <div class="help-icon">?</div>
-                <div class="help-content">
-                    <p>Mengalami kendala saat login? Hubungi Unit BAAK & Helpdesk Sarpras</p>
-                    <div>
-                        <a href="#">Pusat Bantuan & FAQ ↗</a>
-                        <span>•</span>
-                        <a href="#">Tiket Dukungan</a>
-                    </div>
-                </div>
-
-                <div class="security-footer">
-                    <span>♢ Protokol TLS 1.3 / Enkripsi RSA 4096-bit Aktif</span>
-                    <span>v2.4.0 – Production</span>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-</div>
-
-<script>
-function togglePassword() {
-    const password = document.getElementById("password");
-    password.type = password.type === "password" ? "text" : "password";
-}
-</script>
-
-</body>
-</html>
+  </div>
+</main>
+{% endblock %}
