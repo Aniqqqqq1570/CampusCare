@@ -17,11 +17,13 @@
       <nav class="student-nav">
         <a href="{{ url_for('auth.home') }}">Beranda</a>
         <a class="active" href="{{ url_for('pages.student_dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('pages.public_reports') }}">Laporan Publik</a>
         <a href="{{ url_for('pages.student_reports') }}">Laporan Saya</a>
         <a href="{{ url_for('pages.student_create_report') }}">Buat Laporan</a>
+        <a href="{{ url_for('pages.about_campuscare') }}">Tentang</a>
       </nav>
       <div class="student-header-actions">
-        <span class="student-system-pill"><i></i>Sistem aktif</span>
+        <a class="student-system-pill" href="{{ url_for('pages.student_notifications') }}"><i></i>Notifikasi{% if notification_count %}<b>{{ notification_count }}</b>{% endif %}</a>
         <a class="student-create-top" href="{{ url_for('pages.student_create_report') }}"><span class="material-symbols-outlined">add</span>Buat Laporan</a>
         <div class="student-profile"><span class="student-avatar">{{ current_user.full_name[:1]|upper }}</span><span><strong>{{ current_user.full_name }}</strong><small>Mahasiswa</small></span></div>
         <a class="student-logout" href="{{ url_for('auth.logout') }}">Keluar</a>
@@ -47,7 +49,7 @@
           <p>Pantau perkembangan perbaikan sarana prasarana kampus Anda secara transparan, terstruktur, dan akuntabel hingga tuntas.</p>
           <div class="student-hero-actions">
             <a class="student-btn student-btn-lime" href="{{ url_for('pages.student_create_report') }}"><span class="material-symbols-outlined">add_circle</span>+ Buat Laporan Baru</a>
-            <a class="student-btn student-btn-dark" href="{{ url_for('pages.student_reports') }}"><span class="material-symbols-outlined">travel_explore</span>Lihat Laporan Saya</a>
+            <a class="student-btn student-btn-dark" href="{{ url_for('pages.public_reports') }}"><span class="material-symbols-outlined">travel_explore</span>Eksplor Laporan Publik</a>
           </div>
         </div>
       </section>
@@ -69,10 +71,15 @@
 
       <section class="student-content-grid">
         <div class="student-report-column">
+          <div class="student-report-filters" role="group" aria-label="Filter laporan">
+            <button class="student-filter active" type="button" data-filter="all">All</button>
+            <button class="student-filter" type="button" data-filter="active">Active</button>
+            <button class="student-filter" type="button" data-filter="done">Done</button>
+          </div>
           <div class="student-section-heading"><div><h2>Laporan Pengaduan Saya</h2><p>Daftar laporan sarana prasarana yang Anda kirimkan</p></div><a href="{{ url_for('pages.student_reports') }}">Lihat semua <span class="material-symbols-outlined">arrow_forward</span></a></div>
           {% if reports %}
             {% for report in reports %}
-            <article class="student-ticket-card">
+            <article class="student-ticket-card" data-report-status="{{ 'done' if report.status == 'selesai' else 'active' }}">
               <div class="student-ticket-top"><div><div class="student-ticket-tags"><span class="student-ticket-number">#CC-{{ report.id }}</span><span class="student-status status-{{ report.status }}">{{ report.status|replace('_',' ')|title }}</span></div><h3>{{ report.title }}</h3></div><span class="student-ticket-symbol"><span class="material-symbols-outlined">construction</span></span></div>
               <div class="student-ticket-meta"><span><span class="material-symbols-outlined">location_on</span>{{ report.location.name }}{% if report.location.building %}, {{ report.location.building }}{% endif %}{% if report.location.floor %} Lt. {{ report.location.floor }}{% endif %}</span><span><span class="material-symbols-outlined">category</span>{{ report.category.name }}</span></div>
               <p class="student-ticket-description">{{ report.description|truncate(180, True, '...') }}</p>
@@ -121,13 +128,29 @@
   <footer class="student-footer">
     <div class="student-footer-grid">
       <div class="student-footer-about"><div class="student-footer-brand"><span class="student-brand-icon"><span class="material-symbols-outlined">domain</span></span><strong>CampusCare</strong></div><p>Sistem pelaporan dan pemantauan sarana prasarana kampus terpadu. Transparan, terstruktur, dan akuntabel demi kenyamanan civitas akademika.</p><span class="student-footer-badge"><span class="material-symbols-outlined">verified</span>Portal Pelaporan Kampus</span></div>
-      <div><h4>Tautan Cepat</h4><a href="{{ url_for('auth.home') }}">Beranda</a><a href="{{ url_for('pages.student_reports') }}">Laporan Saya</a><a href="{{ url_for('pages.student_create_report') }}">Buat Laporan</a></div>
+      <div><h4>Tautan Cepat</h4><a href="{{ url_for('auth.home') }}">Beranda</a><a href="{{ url_for('pages.public_reports') }}">Laporan Publik</a><a href="{{ url_for('pages.student_reports') }}">Laporan Saya</a><a href="{{ url_for('pages.student_create_report') }}">Buat Laporan</a><a href="{{ url_for('pages.about_campuscare') }}">Tentang</a></div>
       <div><h4>Akun</h4><a href="{{ url_for('pages.student_dashboard') }}">Dashboard</a><a href="{{ url_for('auth.logout') }}">Keluar</a></div>
       <div><h4>Pusat Bantuan</h4><p>Gunakan halaman detail laporan untuk membaca tanggapan dan perkembangan penanganan dari petugas kampus.</p></div>
     </div>
     <div class="student-footer-bottom"><span>© 2026 CampusCare · Sistem Sarpras Terpadu</span><span>Transparan · Terstruktur · Akuntabel</span></div>
   </footer>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const filters = document.querySelectorAll('.student-filter');
+  const cards = document.querySelectorAll('.student-ticket-card[data-report-status]');
+  filters.forEach(function (button) {
+    button.addEventListener('click', function () {
+      filters.forEach(item => item.classList.remove('active'));
+      button.classList.add('active');
+      const selected = button.dataset.filter;
+      cards.forEach(card => {
+        card.hidden = selected !== 'all' && card.dataset.reportStatus !== selected;
+      });
+    });
+  });
+});
+</script>
 {% else %}
 <div class="cc-dashboard">
   <header class="cc-app-header"><div class="cc-app-header-inner">
