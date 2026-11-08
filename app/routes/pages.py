@@ -16,8 +16,10 @@ def status_count(query, status):
 @role_required('mahasiswa')
 def student_dashboard():
     query = Report.query.filter_by(user_id=current_user.id)
-    reports = query.order_by(Report.created_at.desc()).limit(3).all()
-    latest_report = reports[0] if reports else None
+    reports = query.order_by(Report.created_at.desc()).all()
+    latest_report = query.filter(Report.status.in_(['menunggu_verifikasi', 'diverifikasi', 'sedang_diproses'])).order_by(Report.updated_at.desc()).first()
+    from app.models.response import Response as ReportResponse
+    notification_count = ReportResponse.query.join(Report).filter(Report.user_id == current_user.id, ReportResponse.user_id != current_user.id).count()
     total = query.count()
     stats = [
         {'label': 'Total laporan saya', 'value': total, 'icon': 'assignment', 'tone': 'verified'},
@@ -27,7 +29,7 @@ def student_dashboard():
     return render_template('dashboard.html', page_title='Dashboard Mahasiswa',
         page_subtitle='Pantau perkembangan perbaikan sarana prasarana kampus.',
         role_label='Mahasiswa', stats=stats, reports=reports,
-        latest_report=latest_report, dashboard_type='student')
+        latest_report=latest_report, notification_count=notification_count, dashboard_type='student')
 
 @pages.route('/kampus/dashboard')
 @login_required
@@ -275,3 +277,35 @@ def admin_activity():
     return render_template('workspace.html', page_title='Riwayat Aktivitas',
         page_subtitle='Catatan aktivitas pengelolaan sistem CampusCare.',
         role_label='Administrator', workspace='admin_activity', logs=logs)
+
+ 
+@pages.route('/laporan-publik')
+@login_required
+def public_reports():
+    reports = Report.query.order_by(Report.created_at.desc()).all()
+    return render_template('workspace.html', page_title='Laporan Publik',
+        page_subtitle='Lihat laporan fasilitas kampus yang dibagikan di CampusCare.',
+        role_label='Mahasiswa', workspace='public_reports', reports=reports)
+
+
+@pages.route('/tentang')
+@login_required
+def about_campuscare():
+    return render_template('workspace.html', page_title='Tentang CampusCare',
+        page_subtitle='Sistem pelaporan dan pemantauan sarana prasarana kampus.',
+        role_label='Mahasiswa', workspace='about_campuscare')
+
+
+@pages.route('/mahasiswa/notifikasi')
+@login_required
+@role_required('mahasiswa')
+def student_notifications():
+    from app.models.response import Response as ReportResponse
+    notifications = ReportResponse.query.join(Report).filter(
+        Report.user_id == current_user.id,
+        ReportResponse.user_id != current_user.id
+    ).order_by(ReportResponse.created_at.desc()).all()
+    return render_template('workspace.html', page_title='Notifikasi',
+        page_subtitle='Tanggapan terbaru dari petugas untuk laporan Anda.',
+        role_label='Mahasiswa', workspace='student_notifications',
+        notifications=notifications)
