@@ -1,4 +1,3 @@
-
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -7,6 +6,15 @@ from app.extensions import db
 from app.models.user import User
 
 auth = Blueprint('auth', __name__)
+
+
+# LANDING PAGE
+@auth.route('/')
+def home():
+    if current_user.is_authenticated:
+        return redirect(url_for('auth.dashboard'))
+
+    return render_template('landing.html')
 
 
 # REGISTER
@@ -87,7 +95,7 @@ def login():
     return render_template('auth/login.html')
 
 
-# DASHBOARD
+# DASHBOARD REDIRECT
 @auth.route('/dashboard')
 @login_required
 def dashboard():
