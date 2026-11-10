@@ -311,3 +311,26 @@ def student_notifications():
         page_subtitle='Tanggapan terbaru dari petugas untuk laporan Anda.',
         role_label='Mahasiswa', workspace='student_notifications',
         notifications=notifications)
+
+@pages.route('/admin/laporan')
+@login_required
+@role_required('admin')
+def admin_reports():
+    reports = Report.query.order_by(Report.created_at.desc()).all()
+    return render_template('admin/reports.html', reports=reports)
+
+
+@pages.route('/kampus/riwayat-penanganan')
+@login_required
+@role_required('kampus')
+def campus_handling_history():
+    reports = Report.query.filter(Report.responses.any()).order_by(Report.updated_at.desc()).all()
+    return render_template('campus/handling_history.html', reports=reports)
+
+
+@pages.route('/mahasiswa/riwayat')
+@login_required
+@role_required('mahasiswa')
+def student_history():
+    reports = Report.query.filter_by(user_id=current_user.id).order_by(Report.created_at.desc()).all()
+    return render_template('student/history.html', reports=reports)
