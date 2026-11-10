@@ -1,18 +1,26 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard | CampusCare</title>
-</head>
-<body>
-    <h1>Selamat datang di CampusCare</h1>
-
-    <p>Halo, {{ current_user.full_name }}!</p>
-    <p>NIM: {{ current_user.nim }}</p>
-    <p>Email: {{ current_user.email }}</p>
-    <p>Role: {{ current_user.role }}</p>
-
-    <a href="{{ url_for('auth.profile') }}">Profil Saya</a>
-    <a href="{{ url_for('auth.logout') }}">Logout</a>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Ringkasan Akun | CampusCare{% endblock %}
+{% block content %}
+<main class="cc-auth-wrap">
+  <section class="cc-auth-shell">
+    <aside class="cc-auth-aside">
+      <a class="cc-brand" href="{{ url_for('auth.dashboard') }}"><span class="cc-brand-mark">C</span><span><span class="cc-brand-name">Campus<span>Care</span></span><span class="cc-brand-caption">SISTEM SARPRAS TERPADU</span></span></a>
+      <div><span class="cc-eyebrow"><span class="cc-dot"></span> Akun aktif</span><h1>Selamat datang,<br><em>{{ current_user.full_name }}.</em></h1><p>Ini adalah ringkasan akun CampusCare Anda. Gunakan dashboard sesuai peran untuk melanjutkan aktivitas.</p></div>
+      <div class="cc-auth-aside-note">CampusCare menyatukan pelaporan dan pemantauan sarana prasarana kampus.</div>
+    </aside>
+    <section class="cc-auth-main"><div class="cc-auth-content">
+      <h2>Ringkasan akun</h2><p class="cc-auth-subtitle">Informasi pengguna yang sedang masuk.</p>
+      <div class="cc-field"><label>NAMA LENGKAP</label><p>{{ current_user.full_name }}</p></div>
+      <div class="cc-field"><label>EMAIL</label><p>{{ current_user.email }}</p></div>
+      <div class="cc-field"><label>NIM</label><p>{{ current_user.nim or '—' }}</p></div>
+      <div class="cc-field"><label>PROGRAM STUDI</label><p>{{ current_user.study_program or '—' }}</p></div>
+      <div class="cc-field"><label>FAKULTAS</label><p>{{ current_user.faculty or '—' }}</p></div>
+      <div class="cc-field"><label>ROLE</label><p>{{ current_user.role|title }}</p></div>
+      {% if current_user.role == 'admin' %}<a class="cc-btn cc-btn-primary cc-btn-block" href="{{ url_for('pages.admin_dashboard') }}">Buka Dashboard Admin →</a>
+      {% elif current_user.role == 'kampus' %}<a class="cc-btn cc-btn-primary cc-btn-block" href="{{ url_for('pages.campus_dashboard') }}">Buka Dashboard Kampus →</a>
+      {% else %}<a class="cc-btn cc-btn-primary cc-btn-block" href="{{ url_for('pages.student_dashboard') }}">Buka Dashboard Mahasiswa →</a>{% endif %}
+      <p class="cc-auth-bottom"><a href="{{ url_for('auth.profile') }}">Lihat profil akun</a> · <a href="{{ url_for('auth.logout') }}">Keluar</a></p>
+    </div></section>
+  </section>
+</main>
+{% endblock %}
