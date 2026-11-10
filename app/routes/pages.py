@@ -26,7 +26,7 @@ def student_dashboard():
         {'label': 'Menunggu verifikasi', 'value': status_count(query, 'menunggu_verifikasi'), 'icon': 'schedule', 'tone': 'waiting'},
         {'label': 'Sedang ditangani', 'value': status_count(query, 'sedang_diproses'), 'icon': 'engineering', 'tone': 'process'},
         {'label': 'Selesai & ditutup', 'value': status_count(query, 'selesai'), 'icon': 'task_alt', 'tone': 'done'}]
-    return render_template('dashboard.html', page_title='Dashboard Mahasiswa',
+    return render_template('student/dashboard.html', page_title='Dashboard Mahasiswa',
         page_subtitle='Pantau perkembangan perbaikan sarana prasarana kampus.',
         role_label='Mahasiswa', stats=stats, reports=reports,
         latest_report=latest_report, notification_count=notification_count, dashboard_type='student')
@@ -42,7 +42,7 @@ def campus_dashboard():
         {'label': 'Menunggu verifikasi', 'value': status_count(query, 'menunggu_verifikasi'), 'icon': '◷', 'tone': 'amber'},
         {'label': 'Sedang diproses', 'value': status_count(query, 'sedang_diproses'), 'icon': '↻', 'tone': 'teal'},
         {'label': 'Selesai ditangani', 'value': status_count(query, 'selesai'), 'icon': '✓', 'tone': 'green'}]
-    return render_template('dashboard.html', page_title='Dashboard Kampus', page_subtitle='Tinjau laporan dan pantau proses penanganan fasilitas.', role_label='Petugas Kampus', stats=stats, reports=reports, dashboard_type='campus')
+    return render_template('campus/dashboard.html', page_title='Dashboard Kampus', page_subtitle='Tinjau laporan dan pantau proses penanganan fasilitas.', role_label='Petugas Kampus', stats=stats, reports=reports, dashboard_type='campus')
 
 @pages.route('/admin/dashboard')
 @login_required
@@ -58,7 +58,7 @@ def admin_dashboard():
     overview = [
         {'label': 'Kategori aktif', 'value': Category.query.filter_by(is_active=True).count()},
         {'label': 'Lokasi aktif', 'value': Location.query.filter_by(is_active=True).count()}]
-    return render_template('dashboard.html', page_title='Dashboard Admin', page_subtitle='Ringkasan pengguna dan aktivitas pelaporan CampusCare.', role_label='Administrator', stats=stats, reports=reports, overview=overview, dashboard_type='admin')
+    return render_template('admin/dashboard.html', page_title='Dashboard Admin', page_subtitle='Ringkasan pengguna dan aktivitas pelaporan CampusCare.', role_label='Administrator', stats=stats, reports=reports, overview=overview, dashboard_type='admin')
 
 
 from flask import request, redirect, url_for, flash
@@ -99,7 +99,7 @@ def student_create_report():
             raise
         flash('Laporan berhasil dikirim.', 'success')
         return redirect(url_for('pages.student_report_detail', report_id=report.id))
-    return render_template('workspace.html', page_title='Buat Laporan',
+    return render_template('student/create_report.html', page_title='Buat Laporan',
         page_subtitle='Ceritakan kerusakan fasilitas kampus yang kamu temukan.',
         role_label='Mahasiswa', workspace='create_report',
         categories=Category.query.filter_by(is_active=True).order_by(Category.name).all(),
@@ -111,7 +111,7 @@ def student_create_report():
 @role_required('mahasiswa')
 def student_reports():
     reports = Report.query.filter_by(user_id=current_user.id).order_by(Report.created_at.desc()).all()
-    return render_template('workspace.html', page_title='Riwayat Laporan',
+    return render_template('student/reports.html', page_title='Riwayat Laporan',
         page_subtitle='Semua laporan fasilitas yang pernah kamu kirim.',
         role_label='Mahasiswa', workspace='student_reports', reports=reports)
 
@@ -121,7 +121,7 @@ def student_reports():
 @role_required('mahasiswa')
 def student_report_detail(report_id):
     report = Report.query.filter_by(id=report_id, user_id=current_user.id).first_or_404()
-    return render_template('workspace.html', page_title='Detail Laporan',
+    return render_template('student/report_detail.html', page_title='Detail Laporan',
         page_subtitle='Informasi dan perkembangan laporan fasilitas.',
         role_label='Mahasiswa', workspace='report_detail',
         report=report, responses=report.responses)
@@ -132,7 +132,7 @@ def student_report_detail(report_id):
 @role_required('kampus')
 def campus_reports():
     reports = Report.query.order_by(Report.created_at.desc()).all()
-    return render_template('workspace.html', page_title='Laporan Masuk',
+    return render_template('campus/incoming_report.html', page_title='Laporan Masuk',
         page_subtitle='Periksa laporan dan tindak lanjuti kerusakan fasilitas.',
         role_label='Petugas Kampus', workspace='campus_reports', reports=reports)
 
@@ -163,7 +163,7 @@ def campus_report_detail(report_id):
         db.session.commit()
         flash('Status laporan berhasil diperbarui.', 'success')
         return redirect(url_for('pages.campus_report_detail', report_id=report.id))
-    return render_template('workspace.html', page_title='Detail Laporan',
+    return render_template('campus/report_detail.html', page_title='Detail Laporan',
         page_subtitle='Tinjau informasi dan perbarui status penanganan.',
         role_label='Petugas Kampus', workspace='campus_report_detail',
         report=report, responses=report.responses,
@@ -200,7 +200,7 @@ def admin_users():
         flash('Pengguna berhasil ditambahkan.', 'success')
         return redirect(url_for('pages.admin_users'))
     users = User.query.order_by(User.created_at.desc()).all()
-    return render_template('workspace.html', page_title='Manajemen Pengguna',
+    return render_template('admin/users.html', page_title='Manajemen Pengguna',
         page_subtitle='Kelola akun mahasiswa, petugas kampus, dan administrator.',
         role_label='Administrator', workspace='admin_users', users=users)
 
@@ -240,7 +240,7 @@ def admin_categories():
             flash('Kategori berhasil ditambahkan.', 'success')
         return redirect(url_for('pages.admin_categories'))
     categories = Category.query.order_by(Category.id.asc()).all()
-    return render_template('workspace.html', page_title='Manajemen Kategori',
+    return render_template('admin/categories.html', page_title='Manajemen Kategori',
         page_subtitle='Atur jenis kerusakan fasilitas yang dapat dipilih mahasiswa.',
         role_label='Administrator', workspace='admin_categories', categories=categories)
 
@@ -265,7 +265,7 @@ def admin_locations():
             flash('Lokasi berhasil ditambahkan.', 'success')
         return redirect(url_for('pages.admin_locations'))
     locations = Location.query.order_by(Location.id.asc()).all()
-    return render_template('workspace.html', page_title='Manajemen Lokasi',
+    return render_template('admin/locations.html', page_title='Manajemen Lokasi',
         page_subtitle='Kelola gedung dan lokasi fasilitas kampus.',
         role_label='Administrator', workspace='admin_locations', locations=locations)
 
@@ -276,7 +276,7 @@ def admin_locations():
 def admin_activity():
     from app.models.activity_log import ActivityLog
     logs = ActivityLog.query.order_by(ActivityLog.created_at.desc()).limit(100).all()
-    return render_template('workspace.html', page_title='Riwayat Aktivitas',
+    return render_template('admin/activity_logs.html', page_title='Riwayat Aktivitas',
         page_subtitle='Catatan aktivitas pengelolaan sistem CampusCare.',
         role_label='Administrator', workspace='admin_activity', logs=logs)
 
