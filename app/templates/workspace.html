@@ -17,7 +17,7 @@
           <a href="{{ url_for('pages.admin_dashboard') }}">Dashboard</a><a href="{{ url_for('pages.admin_users') }}" class="{% if workspace == 'admin_users' %}active{% endif %}">Pengguna</a><a href="{{ url_for('pages.admin_categories') }}" class="{% if workspace == 'admin_categories' %}active{% endif %}">Kategori</a><a href="{{ url_for('pages.admin_locations') }}" class="{% if workspace == 'admin_locations' %}active{% endif %}">Lokasi</a><a href="{{ url_for('pages.admin_activity') }}" class="{% if workspace == 'admin_activity' %}active{% endif %}">Aktivitas</a>
         {% endif %}
       </nav>
-      <div class="cc-app-account"><span class="cc-app-online"><i></i> Sistem aktif</span><span class="cc-app-avatar">{{ current_user.full_name[:1]|upper }}</span><span class="cc-app-account-name"><strong>{{ current_user.full_name }}</strong><small>{{ role_label }}</small></span><a class="cc-app-logout" href="{{ url_for('auth.logout') }}">Keluar</a></div>
+      <div class="cc-app-account"><span class="cc-app-online"><i></i> Sistem aktif</span><span class="cc-app-avatar">{{ current_user.full_name[:1]|upper }}</span><span class="cc-app-account-name"><strong>{{ current_user.full_name }}</strong><small>{{ role_label }}</small></span><a class="cc-app-logout" href="{{ url_for('auth.profile') }}">Profil</a><a class="cc-app-logout" href="{{ url_for('auth.logout') }}">Keluar</a></div>
     </div>
   </header>
 
