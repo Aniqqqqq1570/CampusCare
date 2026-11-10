@@ -1,2 +1,19 @@
-{% extends "workspace.html" %}
+{% extends "base.html" %}
 {% block title %}Buat Laporan | CampusCare{% endblock %}
+{% block content %}
+<div class="cc-dashboard"><header class="cc-app-header"><div class="cc-app-header-inner">
+<a class="cc-brand" href="{{ url_for('pages.student_dashboard') }}"><span class="cc-brand-mark">C</span><span><span class="cc-brand-name">Campus<span>Care</span></span><span class="cc-brand-caption">SISTEM SARPRAS TERPADU</span></span></a>
+<nav class="cc-app-nav"><a href="{{ url_for('pages.student_dashboard') }}">Dashboard</a><a href="{{ url_for('pages.public_reports') }}">Laporan Publik</a><a class="active" href="{{ url_for('pages.student_reports') }}">Laporan Saya</a><a href="{{ url_for('pages.student_history') }}">Riwayat</a><a href="{{ url_for('pages.student_create_report') }}">Buat Laporan</a></nav><div class="cc-app-account"><span class="cc-app-avatar">{{ current_user.full_name[:1]|upper }}</span><span class="cc-app-account-name"><strong>{{ current_user.full_name }}</strong><small>Mahasiswa</small></span><a class="cc-app-logout" href="{{ url_for('auth.profile') }}">Profil</a><a class="cc-app-logout" href="{{ url_for('auth.logout') }}">Keluar</a></div>
+</div></header><main class="cc-dashboard-main"><div class="cc-dashboard-content">
+<div class="cc-workspace-heading"><div><span class="cc-dashboard-kicker">Mahasiswa</span><h1>Buat Laporan</h1><p>Kelola dan pantau laporan fasilitas kampus Anda.</p></div></div>
+{% with messages = get_flashed_messages(with_categories=true) %}{% for category, message in messages %}<div class="cc-alert cc-alert-{{ category }}">{{ message }}</div>{% endfor %}{% endwith %}
+
+<section class="cc-work-panel"><form method="POST" enctype="multipart/form-data" class="cc-work-form"><div class="cc-form-grid">
+<div class="cc-field cc-field-full"><label for="title">Judul laporan</label><input class="cc-input" id="title" name="title" maxlength="150" placeholder="Contoh: Proyektor ruang kelas tidak menyala" required></div>
+<div class="cc-field"><label for="category_id">Kategori kerusakan</label><select class="cc-input" id="category_id" name="category_id" required><option value="">Pilih kategori</option>{% for item in categories %}<option value="{{ item.id }}">{{ item.name }}</option>{% endfor %}</select></div>
+<div class="cc-field"><label for="location_id">Lokasi fasilitas</label><select class="cc-input" id="location_id" name="location_id" required><option value="">Pilih lokasi</option>{% for item in locations %}<option value="{{ item.id }}">{{ item.name }}{% if item.building %} — {{ item.building }}{% endif %}</option>{% endfor %}</select></div>
+<div class="cc-field cc-field-full"><label for="description">Deskripsi kerusakan</label><textarea class="cc-input cc-textarea" id="description" name="description" rows="5" placeholder="Jelaskan kondisi kerusakan secara detail..." required></textarea></div>
+<div class="cc-field cc-field-full"><label for="image">Foto pendukung (opsional)</label><input class="cc-input cc-file" id="image" name="image" type="file" accept=".jpg,.jpeg,.png,.webp"><small class="cc-form-hint">Format JPG, PNG, atau WEBP. Maksimal 5 MB.</small></div>
+</div><div class="cc-form-actions"><a class="cc-btn cc-btn-ghost" href="{{ url_for('pages.student_dashboard') }}">Batal</a><button class="cc-btn cc-btn-primary" type="submit">Kirim Laporan</button></div></form></section><footer class="cc-dashboard-footer">© 2026 CampusCare · Sistem Sarpras Terpadu</footer>
+</div></main></div>
+{% endblock %}
