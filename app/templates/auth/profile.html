@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Profil Saya | CampusCare{% endblock %}
+{% block content %}
+<main class="cc-auth-wrap">
+  <section class="cc-auth-shell">
+    <aside class="cc-auth-aside">
+      <a class="cc-brand" href="{{ url_for('auth.dashboard') }}"><span class="cc-brand-mark">C</span><span><span class="cc-brand-name">Campus<span>Care</span></span><span class="cc-brand-caption">SISTEM SARPRAS TERPADU</span></span></a>
+      <div><span class="cc-eyebrow"><span class="cc-dot"></span> Pengaturan akun</span><h1>Profil <em>pengguna.</em></h1><p>Periksa informasi akun yang terdaftar di CampusCare.</p></div>
+    </aside>
+    <section class="cc-auth-main"><div class="cc-auth-content">
+      <h2>{{ current_user.full_name }}</h2><p class="cc-auth-subtitle">Informasi akun Anda</p>
+      <div class="cc-field"><label>NAMA LENGKAP</label><p>{{ current_user.full_name }}</p></div>
+      <div class="cc-field"><label>EMAIL</label><p>{{ current_user.email }}</p></div>
+      <div class="cc-field"><label>NIM</label><p>{{ current_user.nim or '—' }}</p></div>
+      <div class="cc-field"><label>PROGRAM STUDI</label><p>{{ current_user.study_program or '—' }}</p></div>
+      <div class="cc-field"><label>FAKULTAS</label><p>{{ current_user.faculty or '—' }}</p></div>
+      <div class="cc-field"><label>ROLE</label><p>{{ current_user.role|title }}</p></div>
+      <a class="cc-btn cc-btn-primary cc-btn-block" href="{{ url_for('auth.dashboard') }}">Kembali ke Dashboard</a>
+    </div></section>
+  </section>
+</main>
+{% endblock %}
