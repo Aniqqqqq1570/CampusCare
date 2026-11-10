@@ -1,2 +1,19 @@
-{% extends "dashboard.html" %}
+{% extends "base.html" %}
 {% block title %}Dashboard Petugas Kampus | CampusCare{% endblock %}
+{% block content %}
+<div class="cc-dashboard">
+  <header class="cc-app-header"><div class="cc-app-header-inner">
+    <a class="cc-brand" href="{{ url_for('pages.campus_dashboard') }}"><span class="cc-brand-mark">C</span><span><span class="cc-brand-name">Campus<span>Care</span></span><span class="cc-brand-caption">SISTEM SARPRAS TERPADU</span></span></a>
+    <nav class="cc-app-nav"><a class="active" href="{{ url_for('pages.campus_dashboard') }}">Dashboard</a><a href="{{ url_for('pages.campus_reports') }}">Laporan Masuk</a><a href="{{ url_for('pages.campus_handling_history') }}">Riwayat Penanganan</a></nav>
+    <div class="cc-app-account"><span class="cc-app-online"><i></i> Sistem aktif</span><span class="cc-app-avatar">{{ current_user.full_name[:1]|upper }}</span><span class="cc-app-account-name"><strong>{{ current_user.full_name }}</strong><small>{{ current_user.role|title }}</small></span><a class="cc-app-logout" href="{{ url_for('auth.profile') }}">Profil</a><a class="cc-app-logout" href="{{ url_for('auth.logout') }}">Keluar</a></div>
+  </div></header>
+  <main class="cc-dashboard-main"><div class="cc-dashboard-content">
+    <div class="cc-workspace-heading"><div><span class="cc-dashboard-kicker">{{ role_label|default(current_user.role|title) }}</span><h1>{{ page_title|default('Dashboard Petugas Kampus') }}</h1><p>{{ page_subtitle|default('Sistem pelaporan dan pemantauan sarana prasarana kampus.') }}</p></div></div>
+    {% with messages = get_flashed_messages(with_categories=true) %}{% for category, message in messages %}<div class="cc-alert cc-alert-{{ category }}">{{ message }}</div>{% endfor %}{% endwith %}
+    
+    <section class="cc-stat-grid">{% for stat in stats %}<article class="cc-stat-card"><div class="cc-stat-top"><span>{{ stat.label }}</span><span class="cc-stat-icon {{ stat.tone }}">{{ stat.icon }}</span></div><strong>{{ stat.value }}</strong><small>Data saat ini</small></article>{% endfor %}</section>
+    <section class="cc-table-panel"><div class="cc-table-heading"><div><h2>Laporan Terbaru</h2><p>Laporan fasilitas yang perlu ditinjau dan ditangani.</p></div><a class="cc-table-link" href="{{ url_for('pages.campus_reports') }}">Semua laporan →</a></div><div class="cc-table-wrap"><table class="cc-data-table"><thead><tr><th>Laporan</th><th>Pelapor</th><th>Lokasi</th><th>Tanggal</th><th>Status</th><th></th></tr></thead><tbody>{% for item in reports %}<tr><td><strong>{{ item.title }}</strong><small>#CC-{{ item.id }}</small></td><td>{{ item.user.full_name }}</td><td>{{ item.location.name }}</td><td>{{ item.created_at.strftime('%d %b %Y') if item.created_at else '-' }}</td><td><span class="cc-status status-{{ item.status }}">{{ item.status|replace('_',' ')|title }}</span></td><td><a class="cc-table-link" href="{{ url_for('pages.campus_report_detail', report_id=item.id) }}">Tinjau →</a></td></tr>{% else %}<tr><td colspan="6">Belum ada laporan.</td></tr>{% endfor %}</tbody></table></div></section>
+    <footer class="cc-dashboard-footer">© 2026 CampusCare · Sistem Sarpras Terpadu</footer>
+  </div></main>
+</div>
+{% endblock %}
