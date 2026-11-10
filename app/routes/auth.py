@@ -99,18 +99,18 @@ def login():
     return render_template('auth/login.html')
 
 
-# DASHBOARD REDIRECT
+# DASHBOARD UMUM
 @auth.route('/dashboard')
 @login_required
 def dashboard():
-    if current_user.role == 'admin':
-        return redirect(url_for('pages.admin_dashboard'))
+    return render_template('auth/dashboard.html')
 
-    elif current_user.role == 'kampus':
-        return redirect(url_for('pages.campus_dashboard'))
 
-    else:
-        return redirect(url_for('pages.student_dashboard'))
+# PROFIL PENGGUNA
+@auth.route('/profil')
+@login_required
+def profile():
+    return render_template('auth/profile.html')
 
 
 # LOGOUT
