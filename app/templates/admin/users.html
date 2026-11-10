@@ -1,2 +1,18 @@
-{% extends "workspace.html" %}
+{% extends "base.html" %}
 {% block title %}Manajemen Pengguna | CampusCare{% endblock %}
+{% block content %}
+<div class="cc-dashboard"><header class="cc-app-header"><div class="cc-app-header-inner">
+<a class="cc-brand" href="{{ url_for('pages.admin_dashboard') }}"><span class="cc-brand-mark">C</span><span><span class="cc-brand-name">Campus<span>Care</span></span><span class="cc-brand-caption">SISTEM SARPRAS TERPADU</span></span></a>
+<nav class="cc-app-nav"><a href="{{ url_for('pages.admin_dashboard') }}">Dashboard</a><a class="active" href="{{ url_for('pages.admin_users') }}">Pengguna</a><a href="{{ url_for('pages.admin_categories') }}">Kategori</a><a href="{{ url_for('pages.admin_locations') }}">Lokasi</a><a href="{{ url_for('pages.admin_reports') }}">Laporan</a><a href="{{ url_for('pages.admin_activity') }}">Aktivitas</a></nav><div class="cc-app-account"><span class="cc-app-avatar">{{ current_user.full_name[:1]|upper }}</span><span class="cc-app-account-name"><strong>{{ current_user.full_name }}</strong><small>Administrator</small></span><a class="cc-app-logout" href="{{ url_for('auth.profile') }}">Profil</a><a class="cc-app-logout" href="{{ url_for('auth.logout') }}">Keluar</a></div>
+</div></header><main class="cc-dashboard-main"><div class="cc-dashboard-content">
+<div class="cc-workspace-heading"><div><span class="cc-dashboard-kicker">Administrator</span><h1>Manajemen Pengguna</h1><p>Kelola data CampusCare melalui halaman ini.</p></div></div>
+{% with messages = get_flashed_messages(with_categories=true) %}{% for category, message in messages %}<div class="cc-alert cc-alert-{{ category }}">{{ message }}</div>{% endfor %}{% endwith %}
+
+<section class="cc-work-panel"><h2>Tambah Pengguna</h2><form method="POST" class="cc-work-form"><div class="cc-form-grid">
+<div class="cc-field"><label>Nama lengkap</label><input class="cc-input" name="full_name" required></div><div class="cc-field"><label>Email</label><input class="cc-input" name="email" type="email" required></div>
+<div class="cc-field"><label>NIM (opsional)</label><input class="cc-input" name="nim"></div><div class="cc-field"><label>Program studi</label><input class="cc-input" name="study_program"></div>
+<div class="cc-field"><label>Fakultas</label><input class="cc-input" name="faculty"></div><div class="cc-field"><label>Password (minimal 8 karakter)</label><input class="cc-input" name="password" type="password" minlength="8" required></div>
+<div class="cc-field"><label>Role</label><select class="cc-input" name="role"><option value="mahasiswa">Mahasiswa</option><option value="kampus">Petugas Kampus</option><option value="admin">Admin</option></select></div></div><button class="cc-btn cc-btn-primary" type="submit">Tambah Pengguna</button></form></section>
+<section class="cc-table-panel"><div class="cc-table-heading"><div><h2>Daftar Pengguna</h2><p>{{ users|length }} akun terdaftar</p></div></div><div class="cc-table-wrap"><table class="cc-data-table"><thead><tr><th>Nama</th><th>Email</th><th>NIM</th><th>Role</th><th>Status</th><th>Aksi</th></tr></thead><tbody>{% for item in users %}<tr><td><strong>{{ item.full_name }}</strong></td><td>{{ item.email }}</td><td>{{ item.nim or '-' }}</td><td>{{ item.role|title }}</td><td>{{ 'Aktif' if item.is_active else 'Nonaktif' }}</td><td>{% if item.is_active and item.id != current_user.id %}<form method="POST" action="{{ url_for('pages.admin_deactivate_user', user_id=item.id) }}" onsubmit="return confirm('Nonaktifkan akun ini?')"><button class="cc-btn cc-btn-danger" type="submit">Nonaktifkan</button></form>{% else %}—{% endif %}</td></tr>{% else %}<tr><td colspan="6">Belum ada pengguna.</td></tr>{% endfor %}</tbody></table></div></section><footer class="cc-dashboard-footer">© 2026 CampusCare · Sistem Sarpras Terpadu</footer>
+</div></main></div>
+{% endblock %}
