@@ -1,2 +1,18 @@
-{% extends "workspace.html" %}
+{% extends "base.html" %}
 {% block title %}Manajemen Laporan | CampusCare{% endblock %}
+{% block content %}
+<div class="cc-dashboard">
+  <header class="cc-app-header"><div class="cc-app-header-inner">
+    <a class="cc-brand" href="{{ url_for('pages.admin_dashboard') }}"><span class="cc-brand-mark">C</span><span><span class="cc-brand-name">Campus<span>Care</span></span><span class="cc-brand-caption">SISTEM SARPRAS TERPADU</span></span></a>
+    <nav class="cc-app-nav"><a href="{{ url_for('pages.admin_dashboard') }}">Dashboard</a><a href="{{ url_for('pages.admin_users') }}">Pengguna</a><a href="{{ url_for('pages.admin_categories') }}">Kategori</a><a href="{{ url_for('pages.admin_locations') }}">Lokasi</a><a class="active" href="{{ url_for('pages.admin_reports') }}">Laporan</a><a href="{{ url_for('pages.admin_activity') }}">Aktivitas</a></nav>
+    <div class="cc-app-account"><span class="cc-app-avatar">{{ current_user.full_name[:1]|upper }}</span><span class="cc-app-account-name"><strong>{{ current_user.full_name }}</strong><small>Administrator</small></span><a class="cc-app-logout" href="{{ url_for('auth.logout') }}">Keluar</a></div>
+  </div></header>
+  <main class="cc-dashboard-main"><div class="cc-dashboard-content">
+    <div class="cc-workspace-heading"><div><span class="cc-dashboard-kicker">Administrator</span><h1>Manajemen Laporan</h1><p>Pantau seluruh laporan fasilitas yang masuk ke CampusCare.</p></div><span class="cc-table-count">{{ reports|length }} laporan</span></div>
+    <section class="cc-table-panel"><div class="cc-table-wrap"><table class="cc-data-table"><thead><tr><th>Nomor & Judul</th><th>Pelapor</th><th>Kategori</th><th>Lokasi</th><th>Tanggal</th><th>Status</th></tr></thead><tbody>
+    {% for item in reports %}<tr><td><strong>#CC-{{ item.id }} · {{ item.title }}</strong><small>{{ item.description|striptags|truncate(100, True, '…') }}</small></td><td>{{ item.user.full_name }}</td><td>{{ item.category.name }}</td><td>{{ item.location.name }}</td><td>{{ item.created_at.strftime('%d %b %Y') if item.created_at else '-' }}</td><td><span class="cc-status status-{{ item.status }}">{{ item.status|replace('_',' ')|title }}</span></td></tr>{% else %}<tr><td colspan="6">Belum ada laporan.</td></tr>{% endfor %}
+    </tbody></table></div></section>
+    <footer class="cc-dashboard-footer">© 2026 CampusCare · Sistem Sarpras Terpadu</footer>
+  </div></main>
+</div>
+{% endblock %}
